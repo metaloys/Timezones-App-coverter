@@ -4,80 +4,230 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Precision Time Zone Converter | Global Work Companion</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <script>
-        tailwind.config = {
-            darkMode: 'class',
-            theme: {
-                extend: {
-                    colors: {
-                        primary: {
-                            50: '#f0f9ff',
-                            100: '#e0f2fe',
-                            500: '#0ea5e9',
-                            600: '#0284c7',
-                            700: '#0369a1',
-                            800: '#075985',
-                            900: '#1e3a8a',
-                        },
-                        secondary: {
-                            500: '#8b5cf6',
-                            600: '#7c3aed',
-                        },
-                        success: '#10b981',
-                        warning: '#f59e0b',
-                        danger: '#ef4444',
-                    },
-                    fontFamily: {
-                        sans: ['Inter', 'system-ui', '-apple-system', 'sans-serif'],
-                    },
-                    keyframes: {
-                        fadeIn: {
-                            '0%': { opacity: '0', transform: 'translateY(10px)' },
-                            '100%': { opacity: '1', transform: 'translateY(0)' }
-                        },
-                        pulse: {
-                            '0%, 100%': { opacity: 1 },
-                            '50%': { opacity: .5 }
-                        }
-                    },
-                    animation: {
-                        fadeIn: 'fadeIn 0.5s ease-out',
-                        pulse: 'pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite'
-                    }
-                }
-            }
-        }
-    </script>
+    
+    <!-- Critical CSS inline to avoid CDN dependency -->
     <style>
+        /* Inline Tailwind-inspired minimal CSS for reliability */
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
         
-        .timezone-card {
-            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        :root {
+            --primary: #0ea5e9;
+            --primary-dark: #0284c7;
+            --secondary: #8b5cf6;
+            --success: #10b981;
+            --warning: #f59e0b;
+            --danger: #ef4444;
+            --gray-100: #f3f4f6;
+            --gray-300: #d1d5db;
+            --gray-500: #6b7280;
+            --gray-700: #374151;
+            --gray-900: #111827;
+            --white: #ffffff;
+            --black: #000000;
         }
         
-        .timezone-card:hover {
-            transform: translateY(-4px);
-            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
         }
         
-        .time-digit {
-            font-variant-numeric: tabular-nums;
+        body {
+            font-family: 'Inter', system-ui, -apple-system, sans-serif;
+            background: linear-gradient(135deg, #1e3a8a 0%, #0369a1 50%, #0891b2 100%);
+            color: var(--white);
+            min-height: 100vh;
+            line-height: 1.5;
         }
         
-        .search-container {
-            position: relative;
+        .container {
+            width: 100%;
+            max-width: 100%;
+            padding: 1rem;
+            margin: 0 auto;
         }
         
+        /* Responsive typography */
+        .text-xs { font-size: 0.75rem; }
+        .text-sm { font-size: 0.875rem; }
+        .text-base { font-size: 1rem; }
+        .text-lg { font-size: 1.125rem; }
+        .text-xl { font-size: 1.25rem; }
+        .text-2xl { font-size: 1.5rem; }
+        .text-3xl { font-size: 1.875rem; }
+        .text-4xl { font-size: 2.25rem; }
+        .text-5xl { font-size: 3rem; }
+        .text-6xl { font-size: 3.75rem; }
+        
+        .font-light { font-weight: 300; }
+        .font-normal { font-weight: 400; }
+        .font-medium { font-weight: 500; }
+        .font-semibold { font-weight: 600; }
+        .font-bold { font-weight: 700; }
+        
+        .text-center { text-align: center; }
+        .text-right { text-align: right; }
+        
+        .mb-2 { margin-bottom: 0.5rem; }
+        .mb-4 { margin-bottom: 1rem; }
+        .mb-6 { margin-bottom: 1.5rem; }
+        .mb-8 { margin-bottom: 2rem; }
+        .mt-2 { margin-top: 0.5rem; }
+        .mt-4 { margin-top: 1rem; }
+        .mt-6 { margin-top: 1.5rem; }
+        .mt-8 { margin-top: 2rem; }
+        .mx-auto { margin-left: auto; margin-right: auto; }
+        
+        .flex { display: flex; }
+        .inline-flex { display: inline-flex; }
+        .items-center { align-items: center; }
+        .justify-center { justify-content: center; }
+        .justify-between { justify-content: space-between; }
+        .gap-2 { gap: 0.5rem; }
+        .gap-3 { gap: 0.75rem; }
+        .gap-4 { gap: 1rem; }
+        .gap-6 { gap: 1.5rem; }
+        .gap-8 { gap: 2rem; }
+        
+        .grid { display: grid; }
+        .grid-cols-1 { grid-template-columns: repeat(1, minmax(0, 1fr)); }
+        .grid-cols-2 { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+        .grid-cols-3 { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+        .grid-cols-6 { grid-template-columns: repeat(6, minmax(0, 1fr)); }
+        
+        /* Responsive grid */
+        @media (min-width: 640px) {
+            .sm\:grid-cols-2 { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+        }
+        
+        @media (min-width: 768px) {
+            .md\:grid-cols-3 { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+            .md\:p-8 { padding: 2rem; }
+        }
+        
+        @media (min-width: 1024px) {
+            .lg\:grid-cols-2 { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+            .container { max-width: 1200px; padding: 2rem; }
+        }
+        
+        /* Form elements */
+        .w-full { width: 100%; }
+        .max-w-full { max-width: 100%; }
+        
+        .rounded-lg { border-radius: 0.5rem; }
+        .rounded-xl { border-radius: 0.75rem; }
+        .rounded-2xl { border-radius: 1rem; }
+        .rounded-3xl { border-radius: 1.5rem; }
+        
+        .p-4 { padding: 1rem; }
+        .p-6 { padding: 1.5rem; }
+        .p-8 { padding: 2rem; }
+        .px-4 { padding-left: 1rem; padding-right: 1rem; }
+        .py-2 { padding-top: 0.5rem; padding-bottom: 0.5rem; }
+        .py-3 { padding-top: 0.75rem; padding-bottom: 0.75rem; }
+        
+        .bg-white-10 { background-color: rgba(255, 255, 255, 0.1); }
+        .bg-white-20 { background-color: rgba(255, 255, 255, 0.2); }
+        .bg-white-5 { background-color: rgba(255, 255, 255, 0.05); }
+        .bg-gradient { background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%); }
+        
+        .border { border: 1px solid; }
+        .border-white-30 { border-color: rgba(255, 255, 255, 0.3); }
+        .border-white-20 { border-color: rgba(255, 255, 255, 0.2); }
+        .border-white-10 { border-color: rgba(255, 255, 255, 0.1); }
+        .border-transparent { border-color: transparent; }
+        
+        .text-white { color: var(--white); }
+        .text-gray-200 { color: rgba(229, 231, 235, 1); }
+        .text-gray-300 { color: rgba(209, 213, 219, 1); }
+        .text-gray-400 { color: rgba(156, 163, 175, 1); }
+        
+        .opacity-20 { opacity: 0.2; }
+        .opacity-75 { opacity: 0.75; }
+        
+        .shadow-2xl { 
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+        }
+        
+        .transform { transform: translate(0); }
+        .transition-all { transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); }
+        
+        /* Button styles */
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-weight: 500;
+            text-align: center;
+            cursor: pointer;
+            border: none;
+            outline: none;
+        }
+        
+        .btn-primary {
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+            color: white;
+            padding: 0.5rem 1rem;
+            border-radius: 0.5rem;
+        }
+        
+        .btn-secondary {
+            background: linear-gradient(135deg, var(--secondary) 0%, #7c3aed 100%);
+            color: white;
+            padding: 0.5rem 1rem;
+            border-radius: 0.5rem;
+        }
+        
+        .btn-outline {
+            background: transparent;
+            color: var(--white);
+            padding: 0.5rem 1rem;
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            border-radius: 0.5rem;
+        }
+        
+        .btn:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+        }
+        
+        .btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+        }
+        
+        /* Input styles */
+        .input {
+            width: 100%;
+            padding: 0.75rem 1rem;
+            background-color: rgba(255, 255, 255, 0.2);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            border-radius: 0.5rem;
+            color: white;
+            font-size: 1rem;
+            outline: none;
+            transition: all 0.2s;
+        }
+        
+        .input:focus {
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(14, 165, 233, 0.3);
+        }
+        
+        .input::placeholder {
+            color: rgba(255, 255, 255, 0.7);
+        }
+        
+        /* Search results */
         .search-results {
             position: absolute;
             top: 100%;
             left: 0;
             right: 0;
-            background: rgba(15, 23, 42, 0.95);
+            background: rgba(17, 24, 39, 0.95);
             border: 1px solid rgba(255, 255, 255, 0.1);
-            border-radius: 0.75rem;
+            border-radius: 0.5rem;
             max-height: 300px;
             overflow-y: auto;
             z-index: 50;
@@ -99,126 +249,273 @@
             border-bottom: none;
         }
         
-        .highlight {
-            background-color: rgba(59, 130, 246, 0.1);
-        }
-        
-        .floating {
-            animation: floating 6s ease-in-out infinite;
-        }
-        
-        @keyframes floating {
-            0% { transform: translateY(0px); }
-            50% { transform: translateY(-10px); }
-            100% { transform: translateY(0px); }
+        /* Animation */
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
         }
         
         .fade-in {
             animation: fadeIn 0.3s ease-out;
         }
+        
+        /* Accessibility */
+        .sr-only {
+            position: absolute;
+            width: 1px;
+            height: 1px;
+            padding: 0;
+            margin: -1px;
+            overflow: hidden;
+            clip: rect(0, 0, 0, 0);
+            white-space: nowrap;
+            border: 0;
+        }
+        
+        /* Force full width despite Blogger theme constraints */
+        body, html {
+            width: 100% !important;
+            max-width: 100% !important;
+            overflow-x: hidden !important;
+        }
+        
+        .container {
+            width: 100% !important;
+            max-width: 100% !important;
+            padding: 1rem !important;
+        }
+        
+        /* Ensure no Blogger theme CSS interferes */
+        * {
+            all: unset;
+            display: revert;
+        }
+        
+        /* Re-apply our styles with higher specificity */
+        html, body {
+            all: initial;
+            margin: 0;
+            padding: 0;
+            font-family: 'Inter', system-ui, -apple-system, sans-serif;
+            background: linear-gradient(135deg, #1e3a8a 0%, #0369a1 50%, #0891b2 100%);
+            color: white;
+            min-height: 100vh;
+        }
+    </style>
+    
+    <!-- Local Font Awesome for reliability -->
+    <style>
+        /* Minimal Font Awesome icons as inline SVG to avoid CDN dependency */
+        .fa {
+            display: inline-block;
+            font-style: normal;
+            font-variant: normal;
+            text-rendering: auto;
+            line-height: 1;
+        }
+        
+        .fa-globe-africa::before {
+            content: "";
+            display: inline-block;
+            width: 1em;
+            height: 1em;
+            background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 512 512'%3E%3Cpath fill='%23ffffff' d='M256 512C114.6 512 0 397.4 0 256S114.6 0 256 0S512 114.6 512 256S397.4 512 256 512zM168.2 335.1C174.3 355.9 192 371.3 192 384c0 26.5-21.5 48-48 48s-48-21.5-48-48c0-12.7 17.7-28.1 23.8-48.9C91.7 324.4 64 290.7 64 256c0-74.8 93.9-132.5 152-145.2V224c0 10.7 6.8 20.6 17 25.2s22.5 3.4 32.2-1.6l112-56c9.8-5 15.6-15 15.6-25.6s-5.8-20.6-15.6-25.6l-112-56C237.5 94.2 228.6 96 220.5 101.8c-8.1 5.8-13.5 14.5-15.5 24.2l-8 40C179.2 178.6 160 201.7 160 227.3V304c0 30.9 25.1 56 56 56h88c3.3 0 6.5-.2 9.7-.6c-1.9 2.3-3.7 4.7-5.3 7.3c-10.1 15.8-15.8 34.2-15.8 53.4c0 74.8-93.9 132.5-152 145.2V384c0-10.7-6.8-20.6-17-25.2s-22.5-3.4-32.2 1.6l-112 56c-9.8 5-15.6 15-15.6 25.6s5.8 20.6 15.6 25.6l112 56c8.1 5.8 17 3.9 25.1-1.9c8.1-5.8 13.5-14.5 15.5-24.2l8-40c17.8-12.6 36.9-20.4 56.7-20.4H384c61.9 0 112-50.1 112-112c0-19.2-5.7-37.6-15.8-53.4c-1.6-2.6-3.4-5-5.3-7.3c3.2.4 6.4.6 9.7.6h88c14.1 0 27.2-7.1 34.8-18.8c7.6-11.7 8.4-26.4 2.1-39.2c-6.3-12.8-18.7-21.8-33.1-24.2C473.9 379.5 416 376 368.2 368.9 358.5 367.5 348.8 365.5 339.3 363z'/%3E%3C/svg%3E") no-repeat;
+            background-size: 1em;
+            vertical-align: -0.125em;
+        }
+        
+        .fa-clock::before {
+            content: "";
+            display: inline-block;
+            width: 1em;
+            height: 1em;
+            background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 512 512'%3E%3Cpath fill='%23ffffff' d='M256 512A256 256 0 1 0 256 0a256 256 0 1 0 0 512zM232 120V256c0 8 4 15.5 10.7 20l96 64c11 7.4 25.9 4.4 33.3-6.7s4.4-25.9-6.7-33.3L280 243.2V120c0-13.3-10.7-24-24-24s-24 10.7-24 24z'/%3E%3C/svg%3E") no-repeat;
+            background-size: 1em;
+            vertical-align: -0.125em;
+        }
+        
+        .fa-map-marker-alt::before {
+            content: "";
+            display: inline-block;
+            width: 1em;
+            height: 1em;
+            background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 384 512'%3E%3Cpath fill='%23ffffff' d='M215.7 499.2C267 435 384 279.4 384 192C384 86 298 0 192 0S0 86 0 192c0 87.4 117 243 168.3 307.2c12.3 15.3 35.1 15.3 47.4 0zM192 272c-44.2 0-80-35.8-80-80s35.8-80 80-80s80 35.8 80 80s-35.8 80-80 80z'/%3E%3C/svg%3E") no-repeat;
+            background-size: 1em;
+            vertical-align: -0.125em;
+        }
+        
+        .fa-plus::before {
+            content: "";
+            display: inline-block;
+            width: 1em;
+            height: 1em;
+            background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 448 512'%3E%3Cpath fill='%23ffffff' d='M256 80c0-17.7-14.3-32-32-32s-32 14.3-32 32V224H48c-17.7 0-32 14.3-32 32s14.3 32 32 32H192V432c0 17.7 14.3 32 32 32s32-14.3 32-32V288H400c17.7 0 32-14.3 32-32s-14.3-32-32-32H256V80z'/%3E%3C/svg%3E") no-repeat;
+            background-size: 1em;
+            vertical-align: -0.125em;
+        }
+        
+        .fa-times::before {
+            content: "";
+            display: inline-block;
+            width: 1em;
+            height: 1em;
+            background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 384 512'%3E%3Cpath fill='%23ffffff' d='M342.6 150.6c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0L192 210.7 86.6 105.4c-12.5-12.5-32.8-12.5-45.3 0s-12.5 32.8 0 45.3L146.7 256 41.4 361.4c-12.5 12.5-12.5 32.8 0 45.3s32.8 12.5 45.3 0L192 301.3 297.4 406.6c12.5 12.5 32.8 12.5 45.3 0s12.5-32.8 0-45.3L237.3 256 342.6 150.6z'/%3E%3C/svg%3E") no-repeat;
+            background-size: 1em;
+            vertical-align: -0.125em;
+        }
+        
+        .fa-sun::before {
+            content: "";
+            display: inline-block;
+            width: 1em;
+            height: 1em;
+            background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 512 512'%3E%3Cpath fill='%23ffffff' d='M361.5 1.2c5 2.1 8.6 6.6 9.6 11.9L391 121l107.9 19.8c5.3 1 9.8 4.6 11.9 9.6s1.5 10.7-1.6 15.2L446.9 256l62.3 90.3c3.1 4.5 3.7 10.2 1.6 15.2s-6.6 8.6-11.9 9.6L391 391 371.1 498.9c-1 5.3-4.6 9.8-9.6 11.9s-10.7 1.5-15.2-1.6L256 446.9l-90.3 62.3c-4.5 3.1-10.2 3.7-15.2 1.6s-8.6-6.6-9.6-11.9L121 391 13.1 371.1c-5.3-1-9.8-4.6-11.9-9.6s-1.5-10.7 1.6-15.2L65.1 256 2.8 165.7c-3.1-4.5-3.7-10.2-1.6-15.2s6.6-8.6 11.9-9.6L121 329 140.9 231.1c1-5.3 4.6-9.8 9.6-11.9s10.7-1.5 15.2 1.6L256 283.1l90.3-62.3c4.5-3.1 10.2-3.7 15.2-1.6zM160 256a96 96 0 1 1 192 0 96 96 0 1 1 -192 0z'/%3E%3C/svg%3E") no-repeat;
+            background-size: 1em;
+            vertical-align: -0.125em;
+        }
+        
+        .fa-moon::before {
+            content: "";
+            display: inline-block;
+            width: 1em;
+            height: 1em;
+            background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 384 512'%3E%3Cpath fill='%23ffffff' d='M223.5 32C100 32 0 132.3 0 256S100 480 223.5 480c66.3 0 123.5-26.1 165.7-68.3c14.7-14.7 14.7-38.6 0-53.3s-38.6-14.7-53.3 0c-34.6 34.6-88.9 55.7-145.7 55.7c-119.1 0-216-96.9-216-216s96.9-216 216-216c56.8 0 111.1 21.1 145.7 55.7c14.7 14.7 38.6 14.7 53.3 0s14.7-38.6 0-53.3s-38.6-14.7-53.3 0C347.1 77.1 282.9 32 223.5 32z'/%3E%3C/svg%3E") no-repeat;
+            background-size: 1em;
+            vertical-align: -0.125em;
+        }
+        
+        .fa-thermometer-half::before {
+            content: "";
+            display: inline-block;
+            width: 1em;
+            height: 1em;
+            background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 384 512'%3E%3Cpath fill='%23ffffff' d='M176 0C128.5 0 96 32.5 96 80V224H80c-35.3 0-64 28.7-64 64s28.7 64 64 64H96V496c0 26.5 21.5 48 48 48s48-21.5 48-48V352c17.7 0 32-14.3 32-32s-14.3-32-32-32H144V80c0-8.8-7.2-16-16-16z'/%3E%3C/svg%3E") no-repeat;
+            background-size: 1em;
+            vertical-align: -0.125em;
+        }
+        
+        .fa-cloud-sun::before {
+            content: "";
+            display: inline-block;
+            width: 1em;
+            height: 1em;
+            background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 576 512'%3E%3Cpath fill='%23ffffff' d='M144 208c-44.2 0-80 35.8-80 80s35.8 80 80 80 80-35.8 80-80-35.8-80-80-80zm336-64H368c-26.5 0-48 21.5-48 48s21.5 48 48 48h112v48c0 44.2 35.8 80 80 80s80-35.8 80-80v-16c0-26.5-21.5-48-48-48H448c-17.7 0-32-14.3-32-32s14.3-32 32-32h144c26.5 0 48-21.5 48-48s-21.5-48-48-48H448c-17.7 0-32-14.3-32-32s14.3-32 32-32h16c44.2 0 80 35.8 80 80s-35.8 80-80 80h-16c-26.5 0-48-21.5-48-48z'/%3E%3C/svg%3E") no-repeat;
+            background-size: 1em;
+            vertical-align: -0.125em;
+        }
+        
+        .fa-globe-africa, .fa-clock, .fa-map-marker-alt, .fa-plus, .fa-times, .fa-sun, .fa-moon, .fa-thermometer-half, .fa-cloud-sun {
+            width: 1em;
+            height: 1em;
+            display: inline-block;
+        }
     </style>
 </head>
-<body class="min-h-screen bg-gradient-to-br from-slate-900 via-gray-900 to-slate-900 text-white">
-    <div class="container mx-auto px-4 py-6 max-w-7xl">
+<body>
+    <div class="container">
         <!-- Header with Hero Section -->
-        <div class="text-center mb-8 relative">
-            <div class="absolute -top-4 -right-4 w-32 h-32 bg-gradient-to-r from-blue-400 to-purple-500 rounded-full opacity-20 floating"></div>
-            <div class="absolute -bottom-4 -left-4 w-24 h-24 bg-gradient-to-r from-green-400 to-yellow-500 rounded-full opacity-20 floating" style="animation-delay: 2s"></div>
-            
-            <div class="mb-4">
-                <i class="fas fa-globe-africa text-5xl text-transparent bg-clip-text bg-gradient-to-r from-blue-400 via-purple-500 to-pink-500 mb-4"></i>
+        <div class="text-center mb-8">
+            <div class="mb-4 flex justify-center">
+                <span class="fa fa-globe-africa text-5xl text-transparent bg-clip-text bg-gradient" style="background: linear-gradient(135deg, #0ea5e9 0%, #8b5cf6 100%);"></span>
             </div>
             
-            <h1 class="text-4xl md:text-6xl font-bold mb-4 bg-clip-text text-transparent bg-gradient-to-r from-blue-400 via-purple-500 to-pink-500">
+            <h1 class="text-3xl md:text-5xl font-bold mb-4 text-transparent bg-clip-text bg-gradient" style="background: linear-gradient(135deg, #0ea5e9 0%, #8b5cf6 100%);">
                 Precision Time Zone Converter
             </h1>
-            <p class="text-xl text-gray-300 mb-2">Your Global Work Companion</p>
-            <p class="text-lg text-gray-400 max-w-3xl mx-auto">
+            <p class="text-lg text-gray-200 mb-2">Your Global Work Companion</p>
+            <p class="text-base text-gray-300 max-w-2xl mx-auto">
                 Select any country or city worldwide to get accurate time, weather, and availability status. Perfect for remote teams and international collaboration.
             </p>
         </div>
 
         <!-- Main Converter Card -->
-        <div class="bg-white/10 backdrop-blur-xl rounded-3xl shadow-2xl border border-white/20 overflow-hidden mb-8 transform transition-all duration-300 hover:shadow-3xl">
-            <div class="p-6 md:p-8">
+        <div class="bg-white-10 rounded-3xl shadow-2xl border border-white-20 overflow-hidden mb-8 transform transition-all duration-300">
+            <div class="p-4 md:p-6">
                 <!-- Source Section -->
-                <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-8">
-                    <div class="space-y-6">
-                        <div class="flex items-center gap-3 mb-4">
-                            <div class="w-3 h-3 bg-primary-500 rounded-full animate-pulse"></div>
-                            <h3 class="text-2xl font-bold text-white">Your Location</h3>
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
+                    <div class="space-y-4">
+                        <div class="flex items-center gap-2 mb-3">
+                            <div class="w-2 h-2 bg-primary rounded-full animate-pulse"></div>
+                            <h3 class="text-xl font-bold text-white">Your Location</h3>
                         </div>
                         
-                        <div class="bg-white/5 rounded-2xl p-6 border border-white/10">
-                            <div class="text-center mb-6">
-                                <div class="text-6xl font-mono font-bold text-white time-digit mb-2" id="currentTime">
+                        <div class="bg-white-5 rounded-2xl p-4 border border-white-10">
+                            <div class="text-center mb-4">
+                                <div class="text-4xl sm:text-5xl font-mono font-bold text-white mb-1" id="currentTime">
                                     12:34:56
                                 </div>
-                                <div class="text-gray-300" id="currentTimezone">
+                                <div class="text-sm text-gray-300" id="currentTimezone">
                                     Select your location
                                 </div>
                             </div>
                             
-                            <div class="space-y-4">
+                            <div class="space-y-3">
                                 <div>
-                                    <label class="block text-sm font-medium text-gray-300 mb-2">
-                                        <i class="fas fa-clock mr-2"></i>Set Time to Convert
+                                    <label for="sourceTime" class="block text-sm font-medium text-gray-300 mb-1">
+                                        <span class="fa fa-clock mr-1"></span> Set Time to Convert
                                     </label>
                                     <input
                                         type="time"
                                         id="sourceTime"
-                                        class="w-full px-4 py-3 bg-white/20 border border-white/30 rounded-xl text-white placeholder-white/70 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent transition-all duration-200"
+                                        class="input"
                                         value=""
+                                        aria-describedby="sourceTimeHelp"
                                     />
+                                    <div id="sourceTimeHelp" class="sr-only">Enter the time you want to convert from your current location</div>
                                 </div>
                                 
                                 <div>
-                                    <label class="block text-sm font-medium text-gray-300 mb-2">
-                                        <i class="fas fa-map-marker-alt mr-2"></i>Your Location
+                                    <label for="locationSearch" class="block text-sm font-medium text-gray-300 mb-1">
+                                        <span class="fa fa-map-marker-alt mr-1"></span> Your Location
                                     </label>
-                                    <div class="search-container">
+                                    <div class="relative">
                                         <input
                                             type="text"
                                             id="locationSearch"
                                             placeholder="Search for your city or country..."
-                                            class="w-full px-4 py-3 bg-white/20 border border-white/30 rounded-xl text-white placeholder-white/70 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent transition-all duration-200"
+                                            class="input w-full"
+                                            aria-autocomplete="list"
+                                            aria-controls="searchResults"
+                                            aria-describedby="locationSearchHelp"
                                         />
-                                        <div id="searchResults" class="search-results hidden"></div>
+                                        <div id="searchResults" class="search-results hidden" role="listbox"></div>
                                     </div>
+                                    <div id="locationSearchHelp" class="sr-only">Type to search for your current location. Use city or country name.</div>
                                 </div>
                             </div>
                         </div>
                     </div>
                     
                     <!-- Target Time Zones -->
-                    <div class="space-y-6">
-                        <div class="flex items-center justify-between">
-                            <div class="flex items-center gap-3">
-                                <div class="w-3 h-3 bg-secondary-500 rounded-full"></div>
-                                <h3 class="text-2xl font-bold text-white">Add Locations</h3>
-                            </div>
+                    <div class="space-y-4">
+                        <div class="flex items-center gap-2">
+                            <div class="w-2 h-2 bg-secondary rounded-full"></div>
+                            <h3 class="text-xl font-bold text-white">Add Locations</h3>
                         </div>
                         
-                        <div class="bg-white/5 rounded-2xl p-6 border border-white/10">
-                            <div class="mb-4">
-                                <label class="block text-sm font-medium text-gray-300 mb-2">
-                                    <i class="fas fa-plus-circle mr-2"></i>Add Any Location Worldwide
+                        <div class="bg-white-5 rounded-2xl p-4 border border-white-10">
+                            <div class="mb-3">
+                                <label for="targetLocationSearch" class="block text-sm font-medium text-gray-300 mb-1">
+                                    <span class="fa fa-plus mr-1"></span> Add Any Location Worldwide
                                 </label>
-                                <div class="search-container">
+                                <div class="relative">
                                     <input
                                         type="text"
                                         id="targetLocationSearch"
                                         placeholder="Search for any city or country to add..."
-                                        class="w-full px-4 py-3 bg-white/20 border border-white/30 rounded-xl text-white placeholder-white/70 focus:outline-none focus:ring-2 focus:ring-secondary-500 focus:border-transparent transition-all duration-200"
+                                        class="input w-full"
+                                        aria-autocomplete="list"
+                                        aria-controls="targetSearchResults"
+                                        aria-describedby="targetLocationSearchHelp"
                                     />
-                                    <div id="targetSearchResults" class="search-results hidden"></div>
+                                    <div id="targetSearchResults" class="search-results hidden" role="listbox"></div>
                                 </div>
+                                <div id="targetLocationSearchHelp" class="sr-only">Search for locations to compare time with. Type city or country name.</div>
                             </div>
                             
-                            <div id="targetTimezonesContainer" class="space-y-3">
-                                <!-- Target timezones will be added here dynamically -->
-                                <div class="text-center py-8 text-gray-400">
-                                    <i class="fas fa-map-marked-alt text-4xl mb-3 opacity-50"></i>
+                            <div id="targetTimezonesContainer" class="space-y-2" role="region" aria-live="polite">
+                                <div class="text-center py-6 text-gray-400 text-sm">
+                                    <span class="fa fa-map-marked-alt text-3xl mb-2 block opacity-50"></span>
                                     <p>Search for locations above to add them here</p>
                                 </div>
                             </div>
@@ -227,65 +524,63 @@
                 </div>
                 
                 <!-- Quick Actions -->
-                <div class="flex flex-wrap gap-2 justify-center pt-4 border-t border-white/10">
-                    <button class="px-3 py-1 bg-white/10 hover:bg-white/20 rounded-lg text-sm transition-colors duration-200 flex items-center gap-1" onclick="setRwandaFocus()">
-                        <i class="fas fa-flag mr-1"></i> Rwanda Focus
+                <div class="flex flex-wrap gap-2 justify-center pt-3 border-t border-white-10">
+                    <button class="btn btn-outline text-sm" onclick="setRwandaFocus()" aria-label="Set focus on Rwanda and common partner locations">
+                        <span class="fa fa-flag"></span> Rwanda Focus
                     </button>
-                    <button class="px-3 py-1 bg-white/10 hover:bg-white/20 rounded-lg text-sm transition-colors duration-200 flex items-center gap-1" onclick="setGlobalTeam()">
-                        <i class="fas fa-users mr-1"></i> Global Team
+                    <button class="btn btn-outline text-sm" onclick="setGlobalTeam()" aria-label="Set up a global team with major world cities">
+                        <span class="fa fa-users"></span> Global Team
                     </button>
-                    <button class="px-3 py-1 bg-white/10 hover:bg-white/20 rounded-lg text-sm transition-colors duration-200 flex items-center gap-1" onclick="clearAllLocations()">
-                        <i class="fas fa-trash-alt mr-1"></i> Clear All
+                    <button class="btn btn-outline text-sm" onclick="clearAllLocations()" aria-label="Remove all added locations">
+                        <span class="fa fa-trash-alt"></span> Clear All
                     </button>
                 </div>
             </div>
         </div>
 
         <!-- World Clock Network -->
-        <div class="bg-white/10 backdrop-blur-xl rounded-3xl shadow-2xl border border-white/20 overflow-hidden mb-8">
-            <div class="p-6 md:p-8">
-                <div class="flex items-center gap-3 mb-6">
-                    <div class="w-3 h-3 bg-success rounded-full"></div>
-                    <h3 class="text-2xl font-bold text-white">World Clock Network</h3>
+        <div class="bg-white-10 rounded-3xl shadow-2xl border border-white-20 overflow-hidden mb-8">
+            <div class="p-4 md:p-6">
+                <div class="flex items-center gap-2 mb-4">
+                    <div class="w-2 h-2 bg-success rounded-full"></div>
+                    <h3 class="text-xl font-bold text-white">World Clock Network</h3>
                 </div>
                 
-                <div id="worldClocks" class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">
-                    <!-- World clocks will be added here dynamically -->
-                </div>
+                <div id="worldClocks" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-3"></div>
             </div>
         </div>
 
         <!-- Features Section -->
-        <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-            <div class="bg-white/10 backdrop-blur-xl rounded-2xl p-6 border border-white/10 text-center transform transition-all duration-300 hover:scale-105">
-                <div class="w-12 h-12 bg-primary-500/20 rounded-full flex items-center justify-center mx-auto mb-4">
-                    <i class="fas fa-globe-africa text-primary-500 text-xl"></i>
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
+            <div class="bg-white-10 rounded-2xl p-4 border border-white-10 text-center">
+                <div class="w-8 h-8 bg-primary/20 rounded-full flex items-center justify-center mx-auto mb-3">
+                    <span class="fa fa-globe-africa text-primary"></span>
                 </div>
-                <h4 class="text-xl font-bold mb-2">Complete Coverage</h4>
-                <p class="text-gray-300">Access time for every country and major city worldwide, including all African nations.</p>
+                <h4 class="text-lg font-bold mb-1">Complete Coverage</h4>
+                <p class="text-sm text-gray-300">Access time for every country and major city worldwide, including all African nations.</p>
             </div>
             
-            <div class="bg-white/10 backdrop-blur-xl rounded-2xl p-6 border border-white/10 text-center transform transition-all duration-300 hover:scale-105">
-                <div class="w-12 h-12 bg-secondary-500/20 rounded-full flex items-center justify-center mx-auto mb-4">
-                    <i class="fas fa-search text-secondary-500 text-xl"></i>
+            <div class="bg-white-10 rounded-2xl p-4 border border-white-10 text-center">
+                <div class="w-8 h-8 bg-secondary/20 rounded-full flex items-center justify-center mx-auto mb-3">
+                    <span class="fa fa-search text-secondary"></span>
                 </div>
-                <h4 class="text-xl font-bold mb-2">Precise Search</h4>
-                <p class="text-gray-300">Find any location with intelligent search that suggests cities and countries as you type.</p>
+                <h4 class="text-lg font-bold mb-1">Precise Search</h4>
+                <p class="text-sm text-gray-300">Find any location with intelligent search that suggests cities and countries as you type.</p>
             </div>
             
-            <div class="bg-white/10 backdrop-blur-xl rounded-2xl p-6 border border-white/10 text-center transform transition-all duration-300 hover:scale-105">
-                <div class="w-12 h-12 bg-success/20 rounded-full flex items-center justify-center mx-auto mb-4">
-                    <i class="fas fa-sync-alt text-success text-xl"></i>
+            <div class="bg-white-10 rounded-2xl p-4 border border-white-10 text-center">
+                <div class="w-8 h-8 bg-success/20 rounded-full flex items-center justify-center mx-auto mb-3">
+                    <span class="fa fa-sync-alt text-success"></span>
                 </div>
-                <h4 class="text-xl font-bold mb-2">Real-time Updates</h4>
-                <p class="text-gray-300">All times update automatically every second with perfect accuracy across all time zones.</p>
+                <h4 class="text-lg font-bold mb-1">Real-time Updates</h4>
+                <p class="text-sm text-gray-300">All times update automatically every second with perfect accuracy across all time zones.</p>
             </div>
         </div>
 
         <!-- Footer -->
-        <div class="text-center text-gray-400 text-sm pb-8">
-            <p class="mb-2">Precision Time Zone Converter • Designed for Global Professionals • Made with ❤️ for Remote Workers</p>
-            <p class="text-xs opacity-75">Select any location worldwide • Real-time updates • Comprehensive country coverage</p>
+        <div class="text-center text-gray-400 text-xs pb-6">
+            <p class="mb-1">Precision Time Zone Converter • Designed for Global Professionals • Made with ❤️ for Remote Workers</p>
+            <p>Works offline • No tracking • 100% private</p>
         </div>
     </div>
 
@@ -495,19 +790,6 @@
             { value: 'America/Yakutat', country: 'USA', city: 'Yakutat', continent: 'Americas', flag: '🇺🇸' },
             { value: 'America/Yellowknife', country: 'Canada', city: 'Yellowknife', continent: 'Americas', flag: '🇨🇦' },
             
-            // Antarctica
-            { value: 'Antarctica/Casey', country: 'Australia', city: 'Casey Station', continent: 'Antarctica', flag: '🇦🇶' },
-            { value: 'Antarctica/Davis', country: 'Australia', city: 'Davis Station', continent: 'Antarctica', flag: '🇦🇶' },
-            { value: 'Antarctica/DumontDUrville', country: 'France', city: 'Dumont d\'Urville Station', continent: 'Antarctica', flag: '🇦🇶' },
-            { value: 'Antarctica/Macquarie', country: 'Australia', city: 'Macquarie Island', continent: 'Antarctica', flag: '🇦🇶' },
-            { value: 'Antarctica/Mawson', country: 'Australia', city: 'Mawson Station', continent: 'Antarctica', flag: '🇦🇶' },
-            { value: 'Antarctica/McMurdo', country: 'USA', city: 'McMurdo Station', continent: 'Antarctica', flag: '🇦🇶' },
-            { value: 'Antarctica/Palmer', country: 'USA', city: 'Palmer Station', continent: 'Antarctica', flag: '🇦🇶' },
-            { value: 'Antarctica/Rothera', country: 'UK', city: 'Rothera Research Station', continent: 'Antarctica', flag: '🇦🇶' },
-            { value: 'Antarctica/Syowa', country: 'Japan', city: 'Syowa Station', continent: 'Antarctica', flag: '🇦🇶' },
-            { value: 'Antarctica/Troll', country: 'Norway', city: 'Troll Station', continent: 'Antarctica', flag: '🇦🇶' },
-            { value: 'Antarctica/Vostok', country: 'Russia', city: 'Vostok Station', continent: 'Antarctica', flag: '🇦🇶' },
-            
             // Asia
             { value: 'Asia/Almaty', country: 'Kazakhstan', city: 'Almaty', continent: 'Asia', flag: '🇰🇿' },
             { value: 'Asia/Amman', country: 'Jordan', city: 'Amman', continent: 'Asia', flag: '🇯🇴' },
@@ -589,32 +871,6 @@
             { value: 'Asia/Yekaterinburg', country: 'Russia', city: 'Yekaterinburg', continent: 'Asia', flag: '🇷🇺' },
             { value: 'Asia/Yerevan', country: 'Armenia', city: 'Yerevan', continent: 'Asia', flag: '🇦🇲' },
             
-            // Atlantic
-            { value: 'Atlantic/Azores', country: 'Portugal', city: 'Azores', continent: 'Atlantic', flag: '🇵🇹' },
-            { value: 'Atlantic/Bermuda', country: 'Bermuda', city: 'Bermuda', continent: 'Atlantic', flag: '🇧🇲' },
-            { value: 'Atlantic/Canary', country: 'Spain', city: 'Canary Islands', continent: 'Atlantic', flag: '🇪🇸' },
-            { value: 'Atlantic/Cape_Verde', country: 'Cape Verde', city: 'Cape Verde', continent: 'Atlantic', flag: '🇨🇻' },
-            { value: 'Atlantic/Faroe', country: 'Faroe Islands', city: 'Faroe Islands', continent: 'Atlantic', flag: '🇫🇴' },
-            { value: 'Atlantic/Madeira', country: 'Portugal', city: 'Madeira', continent: 'Atlantic', flag: '🇵🇹' },
-            { value: 'Atlantic/Reykjavik', country: 'Iceland', city: 'Reykjavik', continent: 'Atlantic', flag: '🇮🇸' },
-            { value: 'Atlantic/South_Georgia', country: 'UK', city: 'South Georgia', continent: 'Atlantic', flag: '🇬🇸' },
-            { value: 'Atlantic/Stanley', country: 'Falkland Islands', city: 'Stanley', continent: 'Atlantic', flag: '🇫🇰' },
-            { value: 'Atlantic/St_Helena', country: 'UK', city: 'St. Helena', continent: 'Atlantic', flag: '🇸🇭' },
-            
-            // Australia & Pacific
-            { value: 'Australia/Adelaide', country: 'Australia', city: 'Adelaide', continent: 'Australia', flag: '🇦🇺' },
-            { value: 'Australia/Brisbane', country: 'Australia', city: 'Brisbane', continent: 'Australia', flag: '🇦🇺' },
-            { value: 'Australia/Broken_Hill', country: 'Australia', city: 'Broken Hill', continent: 'Australia', flag: '🇦🇺' },
-            { value: 'Australia/Currie', country: 'Australia', city: 'Currie', continent: 'Australia', flag: '🇦🇺' },
-            { value: 'Australia/Darwin', country: 'Australia', city: 'Darwin', continent: 'Australia', flag: '🇦🇺' },
-            { value: 'Australia/Eucla', country: 'Australia', city: 'Eucla', continent: 'Australia', flag: '🇦🇺' },
-            { value: 'Australia/Hobart', country: 'Australia', city: 'Hobart', continent: 'Australia', flag: '🇦🇺' },
-            { value: 'Australia/Lindeman', country: 'Australia', city: 'Lindeman Islands', continent: 'Australia', flag: '🇦🇺' },
-            { value: 'Australia/Lord_Howe', country: 'Australia', city: 'Lord Howe Island', continent: 'Australia', flag: '🇦🇺' },
-            { value: 'Australia/Melbourne', country: 'Australia', city: 'Melbourne', continent: 'Australia', flag: '🇦🇺' },
-            { value: 'Australia/Perth', country: 'Australia', city: 'Perth', continent: 'Australia', flag: '🇦🇺' },
-            { value: 'Australia/Sydney', country: 'Australia', city: 'Sydney', continent: 'Australia', flag: '🇦🇺' },
-            
             // Europe
             { value: 'Europe/Amsterdam', country: 'Netherlands', city: 'Amsterdam', continent: 'Europe', flag: '🇳🇱' },
             { value: 'Europe/Andorra', country: 'Andorra', city: 'Andorra', continent: 'Europe', flag: '🇦🇩' },
@@ -676,119 +932,173 @@
             { value: 'Europe/Zaporozhye', country: 'Ukraine', city: 'Zaporizhzhia', continent: 'Europe', flag: '🇺🇦' },
             { value: 'Europe/Zurich', country: 'Switzerland', city: 'Zurich', continent: 'Europe', flag: '🇨🇭' },
             
-            // Indian Ocean
-            { value: 'Indian/Antananarivo', country: 'Madagascar', city: 'Antananarivo', continent: 'Indian Ocean', flag: '🇲🇬' },
-            { value: 'Indian/Chagos', country: 'British Indian Ocean Territory', city: 'Diego Garcia', continent: 'Indian Ocean', flag: '🇮🇴' },
-            { value: 'Indian/Christmas', country: 'Australia', city: 'Christmas Island', continent: 'Indian Ocean', flag: '🇨🇽' },
-            { value: 'Indian/Cocos', country: 'Australia', city: 'Cocos Islands', continent: 'Indian Ocean', flag: '🇨🇨' },
-            { value: 'Indian/Comoro', country: 'Comoros', city: 'Comoros', continent: 'Indian Ocean', flag: '🇰🇲' },
-            { value: 'Indian/Kerguelen', country: 'France', city: 'Kerguelen Islands', continent: 'Indian Ocean', flag: '🇹🇫' },
-            { value: 'Indian/Mahe', country: 'Seychelles', city: 'Mahe', continent: 'Indian Ocean', flag: '🇸🇨' },
-            { value: 'Indian/Maldives', country: 'Maldives', city: 'Maldives', continent: 'Indian Ocean', flag: '🇲🇻' },
-            { value: 'Indian/Mauritius', country: 'Mauritius', city: 'Mauritius', continent: 'Indian Ocean', flag: '🇲🇺' },
-            { value: 'Indian/Mayotte', country: 'France', city: 'Mayotte', continent: 'Indian Ocean', flag: '🇾🇹' },
-            { value: 'Indian/Reunion', country: 'France', city: 'Réunion', continent: 'Indian Ocean', flag: '🇷🇪' },
-            
-            // Pacific
-            { value: 'Pacific/Apia', country: 'Samoa', city: 'Apia', continent: 'Pacific', flag: '🇼🇸' },
-            { value: 'Pacific/Auckland', country: 'New Zealand', city: 'Auckland', continent: 'Pacific', flag: '🇳🇿' },
-            { value: 'Pacific/Bougainville', country: 'Papua New Guinea', city: 'Bougainville', continent: 'Pacific', flag: '🇵🇬' },
-            { value: 'Pacific/Chatham', country: 'New Zealand', city: 'Chatham Islands', continent: 'Pacific', flag: '🇳🇿' },
-            { value: 'Pacific/Chuuk', country: 'Micronesia', city: 'Chuuk', continent: 'Pacific', flag: '🇫🇲' },
-            { value: 'Pacific/Easter', country: 'Chile', city: 'Easter Island', continent: 'Pacific', flag: '🇨🇱' },
-            { value: 'Pacific/Efate', country: 'Vanuatu', city: 'Efate', continent: 'Pacific', flag: '🇻🇺' },
-            { value: 'Pacific/Enderbury', country: 'Kiribati', city: 'Enderbury Island', continent: 'Pacific', flag: '🇰🇮' },
-            { value: 'Pacific/Fakaofo', country: 'Tokelau', city: 'Fakaofo', continent: 'Pacific', flag: '🇹🇰' },
-            { value: 'Pacific/Fiji', country: 'Fiji', city: 'Fiji', continent: 'Pacific', flag: '🇫🇯' },
-            { value: 'Pacific/Funafuti', country: 'Tuvalu', city: 'Funafuti', continent: 'Pacific', flag: '🇹🇻' },
-            { value: 'Pacific/Galapagos', country: 'Ecuador', city: 'Galapagos', continent: 'Pacific', flag: '🇪🇨' },
-            { value: 'Pacific/Gambier', country: 'France', city: 'Gambier Islands', continent: 'Pacific', flag: '🇵🇫' },
-            { value: 'Pacific/Guadalcanal', country: 'Solomon Islands', city: 'Guadalcanal', continent: 'Pacific', flag: '🇸🇧' },
-            { value: 'Pacific/Guam', country: 'USA', city: 'Guam', continent: 'Pacific', flag: '🇬🇺' },
-            { value: 'Pacific/Honolulu', country: 'USA', city: 'Honolulu', continent: 'Pacific', flag: '🇺🇸' },
-            { value: 'Pacific/Johnston', country: 'USA', city: 'Johnston Atoll', continent: 'Pacific', flag: '🇺🇸' },
-            { value: 'Pacific/Kiritimati', country: 'Kiribati', city: 'Kiritimati', continent: 'Pacific', flag: '🇰🇮' },
-            { value: 'Pacific/Kosrae', country: 'Micronesia', city: 'Kosrae', continent: 'Pacific', flag: '🇫🇲' },
-            { value: 'Pacific/Kwajalein', country: 'Marshall Islands', city: 'Kwajalein', continent: 'Pacific', flag: '🇲🇭' },
-            { value: 'Pacific/Majuro', country: 'Marshall Islands', city: 'Majuro', continent: 'Pacific', flag: '🇲🇭' },
-            { value: 'Pacific/Marquesas', country: 'France', city: 'Marquesas Islands', continent: 'Pacific', flag: '🇵🇫' },
-            { value: 'Pacific/Midway', country: 'USA', city: 'Midway Atoll', continent: 'Pacific', flag: '🇺🇸' },
-            { value: 'Pacific/Nauru', country: 'Nauru', city: 'Nauru', continent: 'Pacific', flag: '🇳🇷' },
-            { value: 'Pacific/Niue', country: 'New Zealand', city: 'Niue', continent: 'Pacific', flag: '🇳🇺' },
-            { value: 'Pacific/Norfolk', country: 'Australia', city: 'Norfolk Island', continent: 'Pacific', flag: '🇳🇫' },
-            { value: 'Pacific/Noumea', country: 'France', city: 'Nouméa', continent: 'Pacific', flag: '🇳🇨' },
-            { value: 'Pacific/Pago_Pago', country: 'American Samoa', city: 'Pago Pago', continent: 'Pacific', flag: '🇦🇸' },
-            { value: 'Pacific/Palau', country: 'Palau', city: 'Palau', continent: 'Pacific', flag: '🇵🇼' },
-            { value: 'Pacific/Pitcairn', country: 'UK', city: 'Pitcairn Islands', continent: 'Pacific', flag: '🇵🇳' },
-            { value: 'Pacific/Pohnpei', country: 'Micronesia', city: 'Pohnpei', continent: 'Pacific', flag: '🇫🇲' },
-            { value: 'Pacific/Port_Moresby', country: 'Papua New Guinea', city: 'Port Moresby', continent: 'Pacific', flag: '🇵🇬' },
-            { value: 'Pacific/Rarotonga', country: 'Cook Islands', city: 'Rarotonga', continent: 'Pacific', flag: '🇨🇰' },
-            { value: 'Pacific/Saipan', country: 'Northern Mariana Islands', city: 'Saipan', continent: 'Pacific', flag: '🇲🇵' },
-            { value: 'Pacific/Tahiti', country: 'France', city: 'Tahiti', continent: 'Pacific', flag: '🇵🇫' },
-            { value: 'Pacific/Tarawa', country: 'Kiribati', city: 'Tarawa', continent: 'Pacific', flag: '🇰🇮' },
-            { value: 'Pacific/Tongatapu', country: 'Tonga', city: 'Tongatapu', continent: 'Pacific', flag: '🇹🇴' },
-            { value: 'Pacific/Wake', country: 'USA', city: 'Wake Island', continent: 'Pacific', flag: '🇺🇲' },
-            { value: 'Pacific/Wallis', country: 'France', city: 'Wallis and Futuna', continent: 'Pacific', flag: '🇼🇫' },
-            
             // UTC
             { value: 'UTC', country: 'Universal', city: 'Coordinated Universal Time', continent: 'Universal', flag: '🌐' }
         ];
 
-        // Current time
+        // Current time and state
         let currentTime = new Date();
         let selectedLocation = null;
         let targetLocations = [];
+        let validationTimeout = null;
         
         // Update current time every second
-        setInterval(() => {
+        function updateTime() {
             currentTime = new Date();
             if (selectedLocation) {
                 updateCurrentTimeDisplay();
             }
             updateWorldClocks();
             updateConvertedTimes();
-        }, 1000);
+        }
+        
+        // Start the timer
+        const timer = setInterval(updateTime, 1000);
+        
+        // Cleanup on page unload
+        window.addEventListener('beforeunload', function() {
+            clearInterval(timer);
+        });
 
-        // Function to get timezone abbreviation
+        // Input validation functions
+        function validateTimeInput(timeStr) {
+            if (!timeStr) return { valid: false, error: 'Please enter a time' };
+            
+            const timeRegex = /^([0-1]?[0-9]|2[0-3]):[0-5][0-9]$/;
+            if (!timeRegex.test(timeStr)) {
+                return { valid: false, error: 'Please enter a valid time in HH:MM format' };
+            }
+            
+            return { valid: true, error: null };
+        }
+
+        function validateLocationSelection() {
+            if (!selectedLocation) {
+                return { valid: false, error: 'Please select your current location' };
+            }
+            return { valid: true, error: null };
+        }
+
+        // Show error message
+        function showError(inputElement, message) {
+            const errorElement = document.getElementById(`${inputElement.id}Error`);
+            if (errorElement) {
+                errorElement.textContent = message;
+                errorElement.classList.remove('hidden');
+            } else {
+                const newError = document.createElement('div');
+                newError.id = `${inputElement.id}Error`;
+                newError.className = 'text-danger text-xs mt-1';
+                newError.textContent = message;
+                inputElement.parentNode.appendChild(newError);
+            }
+            
+            inputElement.classList.add('border-danger');
+        }
+
+        // Clear error message
+        function clearError(inputElement) {
+            const errorElement = document.getElementById(`${inputElement.id}Error`);
+            if (errorElement) {
+                errorElement.classList.add('hidden');
+            }
+            inputElement.classList.remove('border-danger');
+        }
+
+        // Validate all inputs
+        function validateAllInputs() {
+            const sourceTimeInput = document.getElementById('sourceTime');
+            const locationInput = document.getElementById('locationSearch');
+            
+            let isValid = true;
+            
+            // Validate time input
+            const timeValidation = validateTimeInput(sourceTimeInput.value);
+            if (!timeValidation.valid) {
+                showError(sourceTimeInput, timeValidation.error);
+                isValid = false;
+            } else {
+                clearError(sourceTimeInput);
+            }
+            
+            // Validate location selection
+            const locationValidation = validateLocationSelection();
+            if (!locationValidation.valid) {
+                showError(locationInput, locationValidation.error);
+                isValid = false;
+            } else {
+                clearError(locationInput);
+            }
+            
+            return isValid;
+        }
+
+        // Function to get timezone abbreviation with error handling
         function getTimezoneAbbreviation(timezone) {
             try {
+                if (!timezone) return 'UTC';
+                
                 const options = { timeZone: timezone, timeZoneName: 'short' };
                 const formatted = new Intl.DateTimeFormat('en-US', options).formatToParts(currentTime);
-                return formatted.find(part => part.type === 'timeZoneName')?.value || timezone.split('/').pop().replace(/_/g, ' ');
+                const tzName = formatted.find(part => part.type === 'timeZoneName');
+                return tzName?.value || timezone.split('/').pop().replace(/_/g, ' ');
             } catch (error) {
+                console.warn(`Error getting timezone abbreviation for ${timezone}:`, error);
                 return timezone.split('/').pop().replace(/_/g, ' ');
             }
         }
 
-        // Function to get current time in a timezone
+        // Function to get current time in a timezone with error handling
         function getCurrentTimeInZone(timezone) {
-            const options = {
-                timeZone: timezone,
-                hour: '2-digit',
-                minute: '2-digit',
-                second: '2-digit',
-                hour12: true,
-            };
-            return new Intl.DateTimeFormat('en-US', options).format(currentTime);
-        }
-
-        // Function to get 24-hour format time
-        function getCurrentTime24Hour(timezone) {
-            const options = {
-                timeZone: timezone,
-                hour: '2-digit',
-                minute: '2-digit',
-                hour12: false,
-            };
-            return new Intl.DateTimeFormat('en-US', options).format(currentTime);
-        }
-
-        // Function to convert time from source to target timezone
-        function convertTime(sourceTime, sourceTimezone, targetTimezone) {
-            if (!sourceTime) return '--:-- --';
-            
             try {
+                if (!timezone) timezone = 'UTC';
+                
+                const options = {
+                    timeZone: timezone,
+                    hour: '2-digit',
+                    minute: '2-digit',
+                    second: '2-digit',
+                    hour12: true,
+                };
+                
+                return new Intl.DateTimeFormat('en-US', options).format(currentTime);
+            } catch (error) {
+                console.warn(`Error getting time for timezone ${timezone}:`, error);
+                return '--:--:--';
+            }
+        }
+
+        // Function to get 24-hour format time with error handling
+        function getCurrentTime24Hour(timezone) {
+            try {
+                if (!timezone) timezone = 'UTC';
+                
+                const options = {
+                    timeZone: timezone,
+                    hour: '2-digit',
+                    minute: '2-digit',
+                    hour12: false,
+                };
+                
+                return new Intl.DateTimeFormat('en-US', options).format(currentTime);
+            } catch (error) {
+                console.warn(`Error getting 24-hour time for timezone ${timezone}:`, error);
+                return '--:--';
+            }
+        }
+
+        // Function to convert time from source to target timezone with error handling
+        function convertTime(sourceTime, sourceTimezone, targetTimezone) {
+            try {
+                if (!sourceTime || !sourceTimezone || !targetTimezone) {
+                    return '--:-- --';
+                }
+                
                 const [hours, minutes] = sourceTime.split(':');
+                if (!hours || !minutes) {
+                    return 'Invalid time';
+                }
+                
                 const sourceDate = new Date();
                 sourceDate.setHours(parseInt(hours), parseInt(minutes), 0, 0);
                 
@@ -801,68 +1111,122 @@
                 
                 return new Intl.DateTimeFormat('en-US', options).format(sourceDate);
             } catch (error) {
-                return 'Invalid time';
+                console.warn(`Error converting time from ${sourceTimezone} to ${targetTimezone}:`, error);
+                return 'Conversion error';
             }
         }
 
-        // Function to get day/night indicator
+        // Function to get day/night indicator with error handling
         function getDayNightIndicator(timezone) {
-            const hours = new Date().toLocaleString('en-US', { timeZone: timezone, hour: 'numeric', hour12: false });
-            return (hours >= 6 && hours < 18) ? 'day' : 'night';
+            try {
+                const hours = new Date().toLocaleString('en-US', { 
+                    timeZone: timezone || 'UTC', 
+                    hour: 'numeric', 
+                    hour12: false 
+                });
+                return (hours >= 6 && hours < 18) ? 'day' : 'night';
+            } catch (error) {
+                console.warn(`Error getting day/night indicator for ${timezone}:`, error);
+                return 'day';
+            }
         }
 
-        // Function to get weather icon and condition
+        // Function to get weather data
         function getWeatherData(timezone) {
-            const hours = new Date().toLocaleString('en-US', { timeZone: timezone, hour: 'numeric', hour12: false });
-            const isDay = hours >= 6 && hours < 18;
-            
-            // Weather based on region
-            if (timezone.includes('Africa')) {
-                return isDay ? { icon: 'fas fa-sun', condition: 'Sunny', temp: '28°C' } : { icon: 'fas fa-moon', condition: 'Clear', temp: '22°C' };
-            } else if (timezone.includes('Europe')) {
-                const conditions = isDay ? 
-                    ['Partly Cloudy', 'Sunny', 'Cloudy', 'Rainy'] : 
-                    ['Clear', 'Partly Cloudy', 'Cloudy', 'Rainy'];
-                const temps = isDay ? ['18°C', '20°C', '16°C', '14°C'] : ['12°C', '14°C', '10°C', '8°C'];
-                const index = Math.floor(Math.random() * conditions.length);
-                return { 
-                    icon: conditions[index] === 'Rainy' ? 'fas fa-cloud-rain' : 
-                           isDay ? 'fas fa-cloud-sun' : 'fas fa-cloud-moon', 
-                    condition: conditions[index], 
-                    temp: temps[index] 
-                };
-            } else if (timezone.includes('America')) {
-                return isDay ? { icon: 'fas fa-sun', condition: 'Sunny', temp: '22°C' } : { icon: 'fas fa-star', condition: 'Clear', temp: '15°C' };
-            } else if (timezone.includes('Asia')) {
-                return isDay ? { icon: 'fas fa-sun', condition: 'Sunny', temp: '30°C' } : { icon: 'fas fa-moon', condition: 'Clear', temp: '25°C' };
-            } else if (timezone.includes('Australia')) {
-                return isDay ? { icon: 'fas fa-sun', condition: 'Sunny', temp: '25°C' } : { icon: 'fas fa-moon', condition: 'Clear', temp: '18°C' };
-            } else {
-                return isDay ? { icon: 'fas fa-sun', condition: 'Sunny', temp: '20°C' } : { icon: 'fas fa-moon', condition: 'Clear', temp: '15°C' };
+            try {
+                const hours = new Date().toLocaleString('en-US', { 
+                    timeZone: timezone || 'UTC', 
+                    hour: 'numeric', 
+                    hour12: false 
+                });
+                const isDay = hours >= 6 && hours < 18;
+                
+                // Weather based on region
+                if (timezone && timezone.includes('Africa')) {
+                    return isDay ? { icon: 'fa-sun', condition: 'Sunny', temp: '28°C' } : { icon: 'fa-moon', condition: 'Clear', temp: '22°C' };
+                } else if (timezone && timezone.includes('Europe')) {
+                    const conditions = isDay ? 
+                        ['Partly Cloudy', 'Sunny', 'Cloudy', 'Rainy'] : 
+                        ['Clear', 'Partly Cloudy', 'Cloudy', 'Rainy'];
+                    const temps = isDay ? ['18°C', '20°C', '16°C', '14°C'] : ['12°C', '14°C', '10°C', '8°C'];
+                    const index = Math.floor(Math.random() * conditions.length);
+                    return { 
+                        icon: conditions[index] === 'Rainy' ? 'fa-cloud-rain' : 
+                               isDay ? 'fa-cloud-sun' : 'fa-cloud-moon', 
+                        condition: conditions[index], 
+                        temp: temps[index] 
+                    };
+                } else if (timezone && timezone.includes('America')) {
+                    return isDay ? { icon: 'fa-sun', condition: 'Sunny', temp: '22°C' } : { icon: 'fa-star', condition: 'Clear', temp: '15°C' };
+                } else if (timezone && timezone.includes('Asia')) {
+                    return isDay ? { icon: 'fa-sun', condition: 'Sunny', temp: '30°C' } : { icon: 'fa-moon', condition: 'Clear', temp: '25°C' };
+                } else if (timezone && timezone.includes('Australia')) {
+                    return isDay ? { icon: 'fa-sun', condition: 'Sunny', temp: '25°C' } : { icon: 'fa-moon', condition: 'Clear', temp: '18°C' };
+                } else {
+                    return isDay ? { icon: 'fa-sun', condition: 'Sunny', temp: '20°C' } : { icon: 'fa-moon', condition: 'Clear', temp: '15°C' };
+                }
+            } catch (error) {
+                console.warn(`Error getting weather data for ${timezone}:`, error);
+                return { icon: 'fa-sun', condition: 'Sunny', temp: '20°C' };
             }
         }
 
         // Function to update current time display
         function updateCurrentTimeDisplay() {
-            if (!selectedLocation) return;
+            if (!selectedLocation) {
+                document.getElementById('currentTime').textContent = '--:--:--';
+                document.getElementById('currentTimezone').textContent = 'Select your location';
+                return;
+            }
             
-            const timeString = getCurrentTimeInZone(selectedLocation.value);
-            document.getElementById('currentTime').textContent = timeString;
-            
-            document.getElementById('currentTimezone').textContent = 
-                `${selectedLocation.city}, ${selectedLocation.country} ${selectedLocation.flag}`;
+            try {
+                const timeString = getCurrentTimeInZone(selectedLocation.value);
+                document.getElementById('currentTime').textContent = timeString;
+                
+                document.getElementById('currentTimezone').textContent = 
+                    `${selectedLocation.city}, ${selectedLocation.country} ${selectedLocation.flag}`;
+            } catch (error) {
+                console.error('Error updating current time display:', error);
+                document.getElementById('currentTime').textContent = 'Error';
+                document.getElementById('currentTimezone').textContent = 'Time display error';
+            }
         }
 
         // Function to update converted times
         function updateConvertedTimes() {
-            const sourceTime = document.getElementById('sourceTime').value;
-            const sourceTimezone = selectedLocation ? selectedLocation.value : 'UTC';
+            // Only update if we have a valid source time and location
+            if (!selectedLocation) return;
+            
+            const sourceTimeInput = document.getElementById('sourceTime');
+            const sourceTime = sourceTimeInput.value;
+            const sourceTimezone = selectedLocation.value;
+            
+            // Validate inputs before conversion
+            const isValid = validateAllInputs();
+            if (!isValid) {
+                // Clear previous conversions
+                targetLocations.forEach(location => {
+                    const element = document.getElementById(`converted-${location.value}`);
+                    if (element) {
+                        element.textContent = '--:-- --';
+                    }
+                });
+                return;
+            }
             
             targetLocations.forEach(location => {
-                const convertedTime = convertTime(sourceTime, sourceTimezone, location.value);
-                const element = document.getElementById(`converted-${location.value}`);
-                if (element) {
-                    element.textContent = convertedTime;
+                try {
+                    const convertedTime = convertTime(sourceTime, sourceTimezone, location.value);
+                    const element = document.getElementById(`converted-${location.value}`);
+                    if (element) {
+                        element.textContent = convertedTime;
+                    }
+                } catch (error) {
+                    console.warn(`Error updating converted time for ${location.value}:`, error);
+                    const element = document.getElementById(`converted-${location.value}`);
+                    if (element) {
+                        element.textContent = 'Error';
+                    }
                 }
             });
         }
@@ -870,75 +1234,92 @@
         // Function to update world clocks
         function updateWorldClocks() {
             const container = document.getElementById('worldClocks');
+            if (!container) return;
+            
             container.innerHTML = '';
             
             // Get 6 random locations from different continents
-            const continents = ['Africa', 'Americas', 'Asia', 'Europe', 'Australia', 'Pacific'];
+            const continents = ['Africa', 'Americas', 'Asia', 'Europe', 'Australia'];
             const selectedLocations = [];
             
             continents.forEach(continent => {
-                const continentLocations = timezoneData.filter(loc => loc.continent === continent);
-                if (continentLocations.length > 0) {
-                    const randomIndex = Math.floor(Math.random() * continentLocations.length);
-                    selectedLocations.push(continentLocations[randomIndex]);
+                try {
+                    const continentLocations = timezoneData.filter(loc => loc.continent === continent);
+                    if (continentLocations.length > 0) {
+                        const randomIndex = Math.floor(Math.random() * continentLocations.length);
+                        selectedLocations.push(continentLocations[randomIndex]);
+                    }
+                } catch (error) {
+                    console.warn(`Error selecting location for continent ${continent}:`, error);
                 }
             });
             
             selectedLocations.forEach(location => {
-                const weather = getWeatherData(location.value);
-                const time24 = getCurrentTime24Hour(location.value);
-                const isAvailable = isWorkingHours(time24);
-                
-                const div = document.createElement('div');
-                div.className = 'bg-white/10 rounded-xl p-4 border border-white/15 text-center transform transition-all duration-300 hover:scale-105';
-                
-                div.innerHTML = `
-                    <div class="flex items-center justify-center gap-2 mb-2">
-                        <span class="text-lg">${location.flag}</span>
-                        <span class="font-semibold text-white">${location.city}</span>
-                    </div>
+                try {
+                    const weather = getWeatherData(location.value);
+                    const time24 = getCurrentTime24Hour(location.value);
+                    const isAvailable = isWorkingHours(time24);
                     
-                    <div class="text-2xl font-bold text-white time-digit mb-1">
-                        ${getCurrentTimeInZone(location.value)}
-                    </div>
+                    const div = document.createElement('div');
+                    div.className = 'bg-white-10 rounded-xl p-3 border border-white-10 text-center';
                     
-                    <div class="text-sm text-gray-300 mb-3">
-                        ${getTimezoneAbbreviation(location.value)}
-                    </div>
+                    div.innerHTML = `
+                        <div class="flex items-center justify-center gap-2 mb-2">
+                            <span class="text-lg">${location.flag}</span>
+                            <span class="font-semibold text-white text-sm">${location.city}</span>
+                        </div>
+                        
+                        <div class="text-xl font-bold text-white mb-1">
+                            ${getCurrentTimeInZone(location.value)}
+                        </div>
+                        
+                        <div class="text-xs text-gray-300 mb-2">
+                            ${getTimezoneAbbreviation(location.value)}
+                        </div>
+                        
+                        <div class="flex items-center justify-center gap-2 text-xs mb-1">
+                            <span class="fa ${weather.icon} ${weather.condition === 'Rainy' ? 'text-blue-400' : 'text-yellow-400'}"></span>
+                            <span class="text-gray-300">${weather.condition}</span>
+                        </div>
+                        
+                        <div class="text-xs text-gray-400 mb-1">${weather.temp}</div>
+                        
+                        <div class="flex items-center justify-center gap-1 text-xs">
+                            <div class="w-1.5 h-1.5 rounded-full ${isAvailable ? 'bg-success' : 'bg-gray-500'}"></div>
+                            <span class="${isAvailable ? 'text-success' : 'text-gray-400'}">
+                                ${isAvailable ? 'Work' : 'Sleep'}
+                            </span>
+                        </div>
+                    `;
                     
-                    <div class="flex items-center justify-center gap-3 text-sm mb-2">
-                        <i class="${weather.icon} ${weather.condition === 'Rainy' ? 'text-blue-400' : 'text-yellow-400'}"></i>
-                        <span class="text-gray-300">${weather.condition}</span>
-                    </div>
-                    
-                    <div class="text-xs text-gray-400 mb-2">${weather.temp}</div>
-                    
-                    <div class="flex items-center justify-center gap-1 text-xs">
-                        <div class="w-2 h-2 rounded-full ${isAvailable ? 'bg-success' : 'bg-gray-500'}"></div>
-                        <span class="${isAvailable ? 'text-success' : 'text-gray-400'}">
-                            ${isAvailable ? 'Available' : 'Offline'}
-                        </span>
-                    </div>
-                `;
-                
-                container.appendChild(div);
+                    container.appendChild(div);
+                } catch (error) {
+                    console.warn(`Error updating world clock for ${location.value}:`, error);
+                }
             });
         }
 
         // Function to check if time is working hours (9 AM - 5 PM)
         function isWorkingHours(time24) {
-            const hour = parseInt(time24.split(':')[0]);
-            return hour >= 9 && hour < 17;
+            try {
+                if (!time24 || time24 === '--:--') return false;
+                const hour = parseInt(time24.split(':')[0]);
+                return hour >= 9 && hour < 17;
+            } catch (error) {
+                console.warn('Error checking working hours:', error);
+                return false;
+            }
         }
 
         // Function to render target timezones
         function renderTargetTimezones() {
             const container = document.getElementById('targetTimezonesContainer');
+            if (!container) return;
             
             if (targetLocations.length === 0) {
                 container.innerHTML = `
-                    <div class="text-center py-8 text-gray-400">
-                        <i class="fas fa-map-marked-alt text-4xl mb-3 opacity-50"></i>
+                    <div class="text-center py-6 text-gray-400 text-sm">
+                        <span class="fa fa-map-marked-alt text-3xl mb-2 block opacity-50"></span>
                         <p>Search for locations above to add them here</p>
                     </div>
                 `;
@@ -948,68 +1329,74 @@
             container.innerHTML = '';
             
             targetLocations.forEach(location => {
-                const weather = getWeatherData(location.value);
-                const isDay = getDayNightIndicator(location.value) === 'day';
-                const isAvailable = isWorkingHours(getCurrentTime24Hour(location.value));
-                
-                const div = document.createElement('div');
-                div.className = 'timezone-card bg-white/15 rounded-2xl p-5 border border-white/20 hover:bg-white/20 transition-all duration-300 fade-in';
-                
-                div.innerHTML = `
-                    <div class="flex items-center justify-between mb-4">
-                        <div class="flex items-center gap-3">
-                            <span class="text-2xl">${location.flag}</span>
-                            <div>
-                                <h4 class="font-bold text-white">${location.city}</h4>
-                                <p class="text-sm text-gray-300">${location.country}</p>
-                            </div>
-                        </div>
-                        <button class="remove-location text-red-300 hover:text-red-100 transition-colors duration-200 bg-white/10 hover:bg-white/20 p-2 rounded-lg" data-timezone="${location.value}">
-                            <i class="fas fa-times"></i>
-                        </button>
-                    </div>
+                try {
+                    const weather = getWeatherData(location.value);
+                    const isDay = getDayNightIndicator(location.value) === 'day';
+                    const isAvailable = isWorkingHours(getCurrentTime24Hour(location.value));
                     
-                    <div class="grid grid-cols-2 gap-4 mb-4">
-                        <div class="bg-white/10 rounded-xl p-3 text-center">
-                            <div class="text-xs text-gray-300 mb-1">Current Time</div>
-                            <div class="text-2xl font-bold text-white time-digit" data-timezone="${location.value}">
-                                ${getCurrentTimeInZone(location.value)}
-                            </div>
-                            <div class="text-xs text-gray-400">${getTimezoneAbbreviation(location.value)}</div>
-                        </div>
-                        
-                        <div class="bg-white/10 rounded-xl p-3 text-center">
-                            <div class="text-xs text-gray-300 mb-1">Converted Time</div>
-                            <div class="text-2xl font-bold text-white time-digit" id="converted-${location.value}">
-                                --:-- --
-                            </div>
-                            <div class="text-xs text-gray-400">from your input</div>
-                        </div>
-                    </div>
+                    const div = document.createElement('div');
+                    div.className = 'bg-white-15 rounded-xl p-4 border border-white-20 mb-2 last:mb-0 fade-in';
                     
-                    <div class="grid grid-cols-3 gap-2 text-xs">
-                        <div class="bg-white/10 rounded-lg p-2 text-center">
-                            <i class="${weather.icon} ${isDay ? 'text-yellow-400' : 'text-blue-300'} mb-1"></i>
-                            <div class="text-gray-300">${weather.condition}</div>
+                    div.innerHTML = `
+                        <div class="flex items-center justify-between mb-3">
+                            <div class="flex items-center gap-2">
+                                <span class="text-xl">${location.flag}</span>
+                                <div>
+                                    <h4 class="font-bold text-white text-sm">${location.city}</h4>
+                                    <p class="text-xs text-gray-300">${location.country}</p>
+                                </div>
+                            </div>
+                            <button class="remove-location text-danger hover:text-red-200 transition-colors duration-200 bg-white-10 hover:bg-white-20 p-1.5 rounded" 
+                                    data-timezone="${location.value}"
+                                    aria-label="Remove ${location.city}, ${location.country}">
+                                <span class="fa fa-times"></span>
+                            </button>
                         </div>
                         
-                        <div class="bg-white/10 rounded-lg p-2 text-center">
-                            <i class="fas fa-thermometer-half text-orange-400 mb-1"></i>
-                            <div class="text-gray-300">${weather.temp}</div>
-                        </div>
-                        
-                        <div class="bg-white/10 rounded-lg p-2 text-center">
-                            <div class="flex items-center justify-center gap-1">
-                                <div class="w-2 h-2 rounded-full ${isAvailable ? 'bg-success' : 'bg-gray-500'}"></div>
-                                <span class="${isAvailable ? 'text-success' : 'text-gray-400'}">
-                                    ${isAvailable ? 'Work' : 'Sleep'}
-                                </span>
+                        <div class="grid grid-cols-2 gap-3 mb-3">
+                            <div class="bg-white-10 rounded-lg p-2 text-center">
+                                <div class="text-xs text-gray-300 mb-1">Current Time</div>
+                                <div class="text-lg font-bold text-white" data-timezone="${location.value}">
+                                    ${getCurrentTimeInZone(location.value)}
+                                </div>
+                                <div class="text-xs text-gray-400">${getTimezoneAbbreviation(location.value)}</div>
+                            </div>
+                            
+                            <div class="bg-white-10 rounded-lg p-2 text-center">
+                                <div class="text-xs text-gray-300 mb-1">Converted Time</div>
+                                <div class="text-lg font-bold text-white" id="converted-${location.value}">
+                                    --:-- --
+                                </div>
+                                <div class="text-xs text-gray-400">from your input</div>
                             </div>
                         </div>
-                    </div>
-                `;
-                
-                container.appendChild(div);
+                        
+                        <div class="grid grid-cols-3 gap-1 text-xs">
+                            <div class="bg-white-10 rounded p-1.5 text-center">
+                                <span class="fa ${weather.icon} ${isDay ? 'text-yellow-400' : 'text-blue-300'} mb-0.5 block"></span>
+                                <div class="text-gray-300">${weather.condition}</div>
+                            </div>
+                            
+                            <div class="bg-white-10 rounded p-1.5 text-center">
+                                <span class="fa fa-thermometer-half text-orange-400 mb-0.5 block"></span>
+                                <div class="text-gray-300">${weather.temp}</div>
+                            </div>
+                            
+                            <div class="bg-white-10 rounded p-1.5 text-center">
+                                <div class="flex items-center justify-center gap-1">
+                                    <div class="w-1.5 h-1.5 rounded-full ${isAvailable ? 'bg-success' : 'bg-gray-500'}"></div>
+                                    <span class="${isAvailable ? 'text-success' : 'text-gray-400'}">
+                                        ${isAvailable ? 'Work' : 'Sleep'}
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+                    `;
+                    
+                    container.appendChild(div);
+                } catch (error) {
+                    console.warn(`Error rendering target timezone ${location.value}:`, error);
+                }
             });
             
             // Update converted times
@@ -1030,53 +1417,123 @@
             const searchInput = document.getElementById(searchInputId);
             const resultsContainer = document.getElementById(resultsContainerId);
             
-            searchInput.addEventListener('input', function() {
-                const query = this.value.toLowerCase().trim();
+            if (!searchInput || !resultsContainer) return;
+            
+            // Debounce function to limit search frequency
+            function debounce(func, wait) {
+                return function(...args) {
+                    clearTimeout(validationTimeout);
+                    validationTimeout = setTimeout(() => func.apply(this, args), wait);
+                };
+            }
+            
+            const debouncedSearch = debounce(function() {
+                const query = searchInput.value.toLowerCase().trim();
                 
                 if (query.length === 0) {
                     resultsContainer.classList.add('hidden');
                     return;
                 }
                 
-                // Filter locations based on search query
-                const filteredLocations = timezoneData.filter(location => 
-                    location.city.toLowerCase().includes(query) || 
-                    location.country.toLowerCase().includes(query) ||
-                    location.value.toLowerCase().includes(query)
-                ).slice(0, 10); // Limit to 10 results
-                
-                if (filteredLocations.length === 0) {
-                    resultsContainer.innerHTML = '<div class="search-result-item">No locations found</div>';
-                } else {
-                    resultsContainer.innerHTML = '';
-                    filteredLocations.forEach(location => {
-                        const div = document.createElement('div');
-                        div.className = 'search-result-item hover:bg-blue-600/20';
-                        div.innerHTML = `
-                            <div class="flex items-center gap-3">
-                                <span class="text-lg">${location.flag}</span>
-                                <div>
-                                    <div class="font-medium">${location.city}</div>
-                                    <div class="text-sm text-gray-400">${location.country} • ${location.value.replace('_', ' ').split('/').pop()}</div>
+                try {
+                    // Filter locations based on search query
+                    const filteredLocations = timezoneData.filter(location => 
+                        location.city.toLowerCase().includes(query) || 
+                        location.country.toLowerCase().includes(query) ||
+                        location.value.toLowerCase().includes(query)
+                    ).slice(0, 10); // Limit to 10 results
+                    
+                    if (filteredLocations.length === 0) {
+                        resultsContainer.innerHTML = '<div class="search-result-item">No locations found</div>';
+                    } else {
+                        resultsContainer.innerHTML = '';
+                        filteredLocations.forEach(location => {
+                            const div = document.createElement('div');
+                            div.className = 'search-result-item hover:bg-blue-600/20';
+                            div.setAttribute('role', 'option');
+                            div.setAttribute('aria-selected', 'false');
+                            
+                            div.innerHTML = `
+                                <div class="flex items-center gap-3">
+                                    <span class="text-lg">${location.flag}</span>
+                                    <div>
+                                        <div class="font-medium">${location.city}</div>
+                                        <div class="text-sm text-gray-400">${location.country} • ${location.value.replace('_', ' ').split('/').pop()}</div>
+                                    </div>
                                 </div>
-                            </div>
-                        `;
-                        div.addEventListener('click', () => {
-                            onSelectCallback(location);
-                            resultsContainer.classList.add('hidden');
-                            searchInput.value = `${location.city}, ${location.country}`;
+                            `;
+                            
+                            div.addEventListener('click', () => {
+                                onSelectCallback(location);
+                                resultsContainer.classList.add('hidden');
+                                searchInput.value = `${location.city}, ${location.country}`;
+                                searchInput.focus();
+                            });
+                            
+                            // Keyboard navigation
+                            div.addEventListener('keydown', (e) => {
+                                if (e.key === 'Enter' || e.key === ' ') {
+                                    onSelectCallback(location);
+                                    resultsContainer.classList.add('hidden');
+                                    searchInput.value = `${location.city}, ${location.country}`;
+                                    searchInput.focus();
+                                }
+                            });
+                            
+                            resultsContainer.appendChild(div);
                         });
-                        resultsContainer.appendChild(div);
-                    });
+                    }
+                    
+                    resultsContainer.classList.remove('hidden');
+                } catch (error) {
+                    console.error('Error in search functionality:', error);
+                    resultsContainer.innerHTML = '<div class="search-result-item">Search error</div>';
+                    resultsContainer.classList.remove('hidden');
                 }
-                
-                resultsContainer.classList.remove('hidden');
-            });
+            }, 150);
             
-            // Hide results when clicking outside
+            searchInput.addEventListener('input', debouncedSearch);
+            
+            // Hide results when clicking outside or pressing escape
             document.addEventListener('click', function(e) {
                 if (!searchInput.contains(e.target) && !resultsContainer.contains(e.target)) {
                     resultsContainer.classList.add('hidden');
+                }
+            });
+            
+            searchInput.addEventListener('keydown', function(e) {
+                if (e.key === 'Escape') {
+                    resultsContainer.classList.add('hidden');
+                }
+            });
+            
+            // Keyboard navigation through results
+            searchInput.addEventListener('keydown', function(e) {
+                if (e.key === 'ArrowDown' && !resultsContainer.classList.contains('hidden')) {
+                    e.preventDefault();
+                    const firstResult = resultsContainer.querySelector('.search-result-item');
+                    if (firstResult) {
+                        firstResult.focus();
+                    }
+                }
+            });
+            
+            // Handle keyboard navigation within results
+            resultsContainer.addEventListener('keydown', function(e) {
+                const results = Array.from(resultsContainer.querySelectorAll('.search-result-item'));
+                const currentIndex = results.indexOf(document.activeElement);
+                
+                if (e.key === 'ArrowDown') {
+                    e.preventDefault();
+                    const nextIndex = currentIndex < results.length - 1 ? currentIndex + 1 : 0;
+                    results[nextIndex].focus();
+                } else if (e.key === 'ArrowUp') {
+                    e.preventDefault();
+                    const prevIndex = currentIndex > 0 ? currentIndex - 1 : results.length - 1;
+                    results[prevIndex].focus();
+                } else if (e.key === 'Escape') {
+                    resultsContainer.classList.add('hidden');
+                    searchInput.focus();
                 }
             });
         }
@@ -1084,7 +1541,9 @@
         // Setup search for source location
         setupSearch('locationSearch', 'searchResults', function(location) {
             selectedLocation = location;
+            clearError(document.getElementById('locationSearch'));
             updateCurrentTimeDisplay();
+            updateConvertedTimes();
         });
 
         // Setup search for target locations
@@ -1105,6 +1564,18 @@
             document.getElementById('targetLocationSearch').value = '';
         });
 
+        // Input validation with debounce
+        document.getElementById('sourceTime').addEventListener('input', function() {
+            if (validationTimeout) {
+                clearTimeout(validationTimeout);
+            }
+            
+            validationTimeout = setTimeout(() => {
+                validateAllInputs();
+                updateConvertedTimes();
+            }, 300);
+        });
+
         // Preset configurations
         function setRwandaFocus() {
             // Clear existing locations
@@ -1114,7 +1585,9 @@
             const rwanda = timezoneData.find(loc => loc.country === 'Rwanda');
             if (rwanda) {
                 selectedLocation = rwanda;
-                document.getElementById('locationSearch').value = `${rwanda.city}, ${rwanda.country}`;
+                const locationSearch = document.getElementById('locationSearch');
+                locationSearch.value = `${rwanda.city}, ${rwanda.country}`;
+                clearError(locationSearch);
                 updateCurrentTimeDisplay();
             }
             
@@ -1142,11 +1615,12 @@
             // Clear existing locations
             targetLocations = [];
             
-            // Set a default source location (UTC if none selected)
+            // Set a default source location if none selected
             if (!selectedLocation) {
-                selectedLocation = timezoneData.find(loc => loc.value === 'UTC');
-                if (selectedLocation) {
-                    document.getElementById('locationSearch').value = selectedLocation.city;
+                const defaultLocation = timezoneData.find(loc => loc.value === 'UTC');
+                if (defaultLocation) {
+                    selectedLocation = defaultLocation;
+                    document.getElementById('locationSearch').value = defaultLocation.city;
                     updateCurrentTimeDisplay();
                 }
             }
@@ -1183,6 +1657,14 @@
         // Initialize with Rwanda as default
         window.addEventListener('load', function() {
             setRwandaFocus();
+            
+            // Set up keyboard shortcuts
+            document.addEventListener('keydown', function(e) {
+                if (e.ctrlKey && e.key === 'Enter') {
+                    // Ctrl+Enter to convert time
+                    updateConvertedTimes();
+                }
+            });
         });
     </script>
 </body>
