@@ -1,0 +1,1189 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Precision Time Zone Converter | Global Work Companion</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        primary: {
+                            50: '#f0f9ff',
+                            100: '#e0f2fe',
+                            500: '#0ea5e9',
+                            600: '#0284c7',
+                            700: '#0369a1',
+                            800: '#075985',
+                            900: '#1e3a8a',
+                        },
+                        secondary: {
+                            500: '#8b5cf6',
+                            600: '#7c3aed',
+                        },
+                        success: '#10b981',
+                        warning: '#f59e0b',
+                        danger: '#ef4444',
+                    },
+                    fontFamily: {
+                        sans: ['Inter', 'system-ui', '-apple-system', 'sans-serif'],
+                    },
+                    keyframes: {
+                        fadeIn: {
+                            '0%': { opacity: '0', transform: 'translateY(10px)' },
+                            '100%': { opacity: '1', transform: 'translateY(0)' }
+                        },
+                        pulse: {
+                            '0%, 100%': { opacity: 1 },
+                            '50%': { opacity: .5 }
+                        }
+                    },
+                    animation: {
+                        fadeIn: 'fadeIn 0.5s ease-out',
+                        pulse: 'pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite'
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+        
+        .timezone-card {
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        
+        .timezone-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+        }
+        
+        .time-digit {
+            font-variant-numeric: tabular-nums;
+        }
+        
+        .search-container {
+            position: relative;
+        }
+        
+        .search-results {
+            position: absolute;
+            top: 100%;
+            left: 0;
+            right: 0;
+            background: rgba(15, 23, 42, 0.95);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 0.75rem;
+            max-height: 300px;
+            overflow-y: auto;
+            z-index: 50;
+            backdrop-filter: blur(8px);
+        }
+        
+        .search-result-item {
+            padding: 0.75rem 1rem;
+            cursor: pointer;
+            transition: background-color 0.2s;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+        }
+        
+        .search-result-item:hover {
+            background-color: rgba(59, 130, 246, 0.2);
+        }
+        
+        .search-result-item:last-child {
+            border-bottom: none;
+        }
+        
+        .highlight {
+            background-color: rgba(59, 130, 246, 0.1);
+        }
+        
+        .floating {
+            animation: floating 6s ease-in-out infinite;
+        }
+        
+        @keyframes floating {
+            0% { transform: translateY(0px); }
+            50% { transform: translateY(-10px); }
+            100% { transform: translateY(0px); }
+        }
+        
+        .fade-in {
+            animation: fadeIn 0.3s ease-out;
+        }
+    </style>
+</head>
+<body class="min-h-screen bg-gradient-to-br from-slate-900 via-gray-900 to-slate-900 text-white">
+    <div class="container mx-auto px-4 py-6 max-w-7xl">
+        <!-- Header with Hero Section -->
+        <div class="text-center mb-8 relative">
+            <div class="absolute -top-4 -right-4 w-32 h-32 bg-gradient-to-r from-blue-400 to-purple-500 rounded-full opacity-20 floating"></div>
+            <div class="absolute -bottom-4 -left-4 w-24 h-24 bg-gradient-to-r from-green-400 to-yellow-500 rounded-full opacity-20 floating" style="animation-delay: 2s"></div>
+            
+            <div class="mb-4">
+                <i class="fas fa-globe-africa text-5xl text-transparent bg-clip-text bg-gradient-to-r from-blue-400 via-purple-500 to-pink-500 mb-4"></i>
+            </div>
+            
+            <h1 class="text-4xl md:text-6xl font-bold mb-4 bg-clip-text text-transparent bg-gradient-to-r from-blue-400 via-purple-500 to-pink-500">
+                Precision Time Zone Converter
+            </h1>
+            <p class="text-xl text-gray-300 mb-2">Your Global Work Companion</p>
+            <p class="text-lg text-gray-400 max-w-3xl mx-auto">
+                Select any country or city worldwide to get accurate time, weather, and availability status. Perfect for remote teams and international collaboration.
+            </p>
+        </div>
+
+        <!-- Main Converter Card -->
+        <div class="bg-white/10 backdrop-blur-xl rounded-3xl shadow-2xl border border-white/20 overflow-hidden mb-8 transform transition-all duration-300 hover:shadow-3xl">
+            <div class="p-6 md:p-8">
+                <!-- Source Section -->
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-8">
+                    <div class="space-y-6">
+                        <div class="flex items-center gap-3 mb-4">
+                            <div class="w-3 h-3 bg-primary-500 rounded-full animate-pulse"></div>
+                            <h3 class="text-2xl font-bold text-white">Your Location</h3>
+                        </div>
+                        
+                        <div class="bg-white/5 rounded-2xl p-6 border border-white/10">
+                            <div class="text-center mb-6">
+                                <div class="text-6xl font-mono font-bold text-white time-digit mb-2" id="currentTime">
+                                    12:34:56
+                                </div>
+                                <div class="text-gray-300" id="currentTimezone">
+                                    Select your location
+                                </div>
+                            </div>
+                            
+                            <div class="space-y-4">
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-300 mb-2">
+                                        <i class="fas fa-clock mr-2"></i>Set Time to Convert
+                                    </label>
+                                    <input
+                                        type="time"
+                                        id="sourceTime"
+                                        class="w-full px-4 py-3 bg-white/20 border border-white/30 rounded-xl text-white placeholder-white/70 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent transition-all duration-200"
+                                        value=""
+                                    />
+                                </div>
+                                
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-300 mb-2">
+                                        <i class="fas fa-map-marker-alt mr-2"></i>Your Location
+                                    </label>
+                                    <div class="search-container">
+                                        <input
+                                            type="text"
+                                            id="locationSearch"
+                                            placeholder="Search for your city or country..."
+                                            class="w-full px-4 py-3 bg-white/20 border border-white/30 rounded-xl text-white placeholder-white/70 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent transition-all duration-200"
+                                        />
+                                        <div id="searchResults" class="search-results hidden"></div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Target Time Zones -->
+                    <div class="space-y-6">
+                        <div class="flex items-center justify-between">
+                            <div class="flex items-center gap-3">
+                                <div class="w-3 h-3 bg-secondary-500 rounded-full"></div>
+                                <h3 class="text-2xl font-bold text-white">Add Locations</h3>
+                            </div>
+                        </div>
+                        
+                        <div class="bg-white/5 rounded-2xl p-6 border border-white/10">
+                            <div class="mb-4">
+                                <label class="block text-sm font-medium text-gray-300 mb-2">
+                                    <i class="fas fa-plus-circle mr-2"></i>Add Any Location Worldwide
+                                </label>
+                                <div class="search-container">
+                                    <input
+                                        type="text"
+                                        id="targetLocationSearch"
+                                        placeholder="Search for any city or country to add..."
+                                        class="w-full px-4 py-3 bg-white/20 border border-white/30 rounded-xl text-white placeholder-white/70 focus:outline-none focus:ring-2 focus:ring-secondary-500 focus:border-transparent transition-all duration-200"
+                                    />
+                                    <div id="targetSearchResults" class="search-results hidden"></div>
+                                </div>
+                            </div>
+                            
+                            <div id="targetTimezonesContainer" class="space-y-3">
+                                <!-- Target timezones will be added here dynamically -->
+                                <div class="text-center py-8 text-gray-400">
+                                    <i class="fas fa-map-marked-alt text-4xl mb-3 opacity-50"></i>
+                                    <p>Search for locations above to add them here</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Quick Actions -->
+                <div class="flex flex-wrap gap-2 justify-center pt-4 border-t border-white/10">
+                    <button class="px-3 py-1 bg-white/10 hover:bg-white/20 rounded-lg text-sm transition-colors duration-200 flex items-center gap-1" onclick="setRwandaFocus()">
+                        <i class="fas fa-flag mr-1"></i> Rwanda Focus
+                    </button>
+                    <button class="px-3 py-1 bg-white/10 hover:bg-white/20 rounded-lg text-sm transition-colors duration-200 flex items-center gap-1" onclick="setGlobalTeam()">
+                        <i class="fas fa-users mr-1"></i> Global Team
+                    </button>
+                    <button class="px-3 py-1 bg-white/10 hover:bg-white/20 rounded-lg text-sm transition-colors duration-200 flex items-center gap-1" onclick="clearAllLocations()">
+                        <i class="fas fa-trash-alt mr-1"></i> Clear All
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- World Clock Network -->
+        <div class="bg-white/10 backdrop-blur-xl rounded-3xl shadow-2xl border border-white/20 overflow-hidden mb-8">
+            <div class="p-6 md:p-8">
+                <div class="flex items-center gap-3 mb-6">
+                    <div class="w-3 h-3 bg-success rounded-full"></div>
+                    <h3 class="text-2xl font-bold text-white">World Clock Network</h3>
+                </div>
+                
+                <div id="worldClocks" class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">
+                    <!-- World clocks will be added here dynamically -->
+                </div>
+            </div>
+        </div>
+
+        <!-- Features Section -->
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+            <div class="bg-white/10 backdrop-blur-xl rounded-2xl p-6 border border-white/10 text-center transform transition-all duration-300 hover:scale-105">
+                <div class="w-12 h-12 bg-primary-500/20 rounded-full flex items-center justify-center mx-auto mb-4">
+                    <i class="fas fa-globe-africa text-primary-500 text-xl"></i>
+                </div>
+                <h4 class="text-xl font-bold mb-2">Complete Coverage</h4>
+                <p class="text-gray-300">Access time for every country and major city worldwide, including all African nations.</p>
+            </div>
+            
+            <div class="bg-white/10 backdrop-blur-xl rounded-2xl p-6 border border-white/10 text-center transform transition-all duration-300 hover:scale-105">
+                <div class="w-12 h-12 bg-secondary-500/20 rounded-full flex items-center justify-center mx-auto mb-4">
+                    <i class="fas fa-search text-secondary-500 text-xl"></i>
+                </div>
+                <h4 class="text-xl font-bold mb-2">Precise Search</h4>
+                <p class="text-gray-300">Find any location with intelligent search that suggests cities and countries as you type.</p>
+            </div>
+            
+            <div class="bg-white/10 backdrop-blur-xl rounded-2xl p-6 border border-white/10 text-center transform transition-all duration-300 hover:scale-105">
+                <div class="w-12 h-12 bg-success/20 rounded-full flex items-center justify-center mx-auto mb-4">
+                    <i class="fas fa-sync-alt text-success text-xl"></i>
+                </div>
+                <h4 class="text-xl font-bold mb-2">Real-time Updates</h4>
+                <p class="text-gray-300">All times update automatically every second with perfect accuracy across all time zones.</p>
+            </div>
+        </div>
+
+        <!-- Footer -->
+        <div class="text-center text-gray-400 text-sm pb-8">
+            <p class="mb-2">Precision Time Zone Converter • Designed for Global Professionals • Made with ❤️ for Remote Workers</p>
+            <p class="text-xs opacity-75">Select any location worldwide • Real-time updates • Comprehensive country coverage</p>
+        </div>
+    </div>
+
+    <script>
+        // Comprehensive timezone data with all countries
+        const timezoneData = [
+            // Africa
+            { value: 'Africa/Abidjan', country: 'Ivory Coast', city: 'Abidjan', continent: 'Africa', flag: '🇨🇮' },
+            { value: 'Africa/Accra', country: 'Ghana', city: 'Accra', continent: 'Africa', flag: '🇬🇭' },
+            { value: 'Africa/Addis_Ababa', country: 'Ethiopia', city: 'Addis Ababa', continent: 'Africa', flag: '🇪🇹' },
+            { value: 'Africa/Algiers', country: 'Algeria', city: 'Algiers', continent: 'Africa', flag: '🇩🇿' },
+            { value: 'Africa/Asmara', country: 'Eritrea', city: 'Asmara', continent: 'Africa', flag: '🇪🇷' },
+            { value: 'Africa/Bamako', country: 'Mali', city: 'Bamako', continent: 'Africa', flag: '🇲🇱' },
+            { value: 'Africa/Bangui', country: 'Central African Republic', city: 'Bangui', continent: 'Africa', flag: '🇨🇫' },
+            { value: 'Africa/Banjul', country: 'Gambia', city: 'Banjul', continent: 'Africa', flag: '🇬🇲' },
+            { value: 'Africa/Bissau', country: 'Guinea-Bissau', city: 'Bissau', continent: 'Africa', flag: '🇬🇼' },
+            { value: 'Africa/Blantyre', country: 'Malawi', city: 'Blantyre', continent: 'Africa', flag: '🇲🇼' },
+            { value: 'Africa/Brazzaville', country: 'Congo', city: 'Brazzaville', continent: 'Africa', flag: '🇨🇬' },
+            { value: 'Africa/Bujumbura', country: 'Burundi', city: 'Bujumbura', continent: 'Africa', flag: '🇧🇮' },
+            { value: 'Africa/Cairo', country: 'Egypt', city: 'Cairo', continent: 'Africa', flag: '🇪🇬' },
+            { value: 'Africa/Casablanca', country: 'Morocco', city: 'Casablanca', continent: 'Africa', flag: '🇲🇦' },
+            { value: 'Africa/Ceuta', country: 'Spain', city: 'Ceuta', continent: 'Africa', flag: '🇪🇸' },
+            { value: 'Africa/Conakry', country: 'Guinea', city: 'Conakry', continent: 'Africa', flag: '🇬🇳' },
+            { value: 'Africa/Dakar', country: 'Senegal', city: 'Dakar', continent: 'Africa', flag: '🇸🇳' },
+            { value: 'Africa/Dar_es_Salaam', country: 'Tanzania', city: 'Dar es Salaam', continent: 'Africa', flag: '🇹🇿' },
+            { value: 'Africa/Djibouti', country: 'Djibouti', city: 'Djibouti', continent: 'Africa', flag: '🇩🇯' },
+            { value: 'Africa/Douala', country: 'Cameroon', city: 'Douala', continent: 'Africa', flag: '🇨🇲' },
+            { value: 'Africa/El_Aaiun', country: 'Western Sahara', city: 'El Aaiun', continent: 'Africa', flag: '🇪🇭' },
+            { value: 'Africa/Freetown', country: 'Sierra Leone', city: 'Freetown', continent: 'Africa', flag: '🇸🇱' },
+            { value: 'Africa/Gaborone', country: 'Botswana', city: 'Gaborone', continent: 'Africa', flag: '🇧🇼' },
+            { value: 'Africa/Harare', country: 'Zimbabwe', city: 'Harare', continent: 'Africa', flag: '🇿🇼' },
+            { value: 'Africa/Johannesburg', country: 'South Africa', city: 'Johannesburg', continent: 'Africa', flag: '🇿🇦' },
+            { value: 'Africa/Juba', country: 'South Sudan', city: 'Juba', continent: 'Africa', flag: '🇸🇸' },
+            { value: 'Africa/Kampala', country: 'Uganda', city: 'Kampala', continent: 'Africa', flag: '🇺🇬' },
+            { value: 'Africa/Khartoum', country: 'Sudan', city: 'Khartoum', continent: 'Africa', flag: '🇸🇩' },
+            { value: 'Africa/Kigali', country: 'Rwanda', city: 'Kigali', continent: 'Africa', flag: '🇷🇼' },
+            { value: 'Africa/Kinshasa', country: 'Democratic Republic of the Congo', city: 'Kinshasa', continent: 'Africa', flag: '🇨🇩' },
+            { value: 'Africa/Lagos', country: 'Nigeria', city: 'Lagos', continent: 'Africa', flag: '🇳🇬' },
+            { value: 'Africa/Libreville', country: 'Gabon', city: 'Libreville', continent: 'Africa', flag: '🇬🇦' },
+            { value: 'Africa/Lome', country: 'Togo', city: 'Lomé', continent: 'Africa', flag: '🇹🇬' },
+            { value: 'Africa/Luanda', country: 'Angola', city: 'Luanda', continent: 'Africa', flag: '🇦🇴' },
+            { value: 'Africa/Lubumbashi', country: 'Democratic Republic of the Congo', city: 'Lubumbashi', continent: 'Africa', flag: '🇨🇩' },
+            { value: 'Africa/Lusaka', country: 'Zambia', city: 'Lusaka', continent: 'Africa', flag: '🇿🇲' },
+            { value: 'Africa/Malabo', country: 'Equatorial Guinea', city: 'Malabo', continent: 'Africa', flag: '🇬🇶' },
+            { value: 'Africa/Maputo', country: 'Mozambique', city: 'Maputo', continent: 'Africa', flag: '🇲🇿' },
+            { value: 'Africa/Maseru', country: 'Lesotho', city: 'Maseru', continent: 'Africa', flag: '🇱🇸' },
+            { value: 'Africa/Mbabane', country: 'Eswatini', city: 'Mbabane', continent: 'Africa', flag: '🇸🇿' },
+            { value: 'Africa/Mogadishu', country: 'Somalia', city: 'Mogadishu', continent: 'Africa', flag: '🇸🇴' },
+            { value: 'Africa/Monrovia', country: 'Liberia', city: 'Monrovia', continent: 'Africa', flag: '🇱🇷' },
+            { value: 'Africa/Nairobi', country: 'Kenya', city: 'Nairobi', continent: 'Africa', flag: '🇰🇪' },
+            { value: 'Africa/Ndjamena', country: 'Chad', city: 'Ndjamena', continent: 'Africa', flag: '🇹🇩' },
+            { value: 'Africa/Niamey', country: 'Niger', city: 'Niamey', continent: 'Africa', flag: '🇳🇪' },
+            { value: 'Africa/Nouakchott', country: 'Mauritania', city: 'Nouakchott', continent: 'Africa', flag: '🇲🇷' },
+            { value: 'Africa/Ouagadougou', country: 'Burkina Faso', city: 'Ouagadougou', continent: 'Africa', flag: '🇧🇫' },
+            { value: 'Africa/Porto-Novo', country: 'Benin', city: 'Porto-Novo', continent: 'Africa', flag: '🇧🇯' },
+            { value: 'Africa/Sao_Tome', country: 'São Tomé and Príncipe', city: 'São Tomé', continent: 'Africa', flag: '🇸🇹' },
+            { value: 'Africa/Tripoli', country: 'Libya', city: 'Tripoli', continent: 'Africa', flag: '🇱🇾' },
+            { value: 'Africa/Tunis', country: 'Tunisia', city: 'Tunis', continent: 'Africa', flag: '🇹🇳' },
+            { value: 'Africa/Windhoek', country: 'Namibia', city: 'Windhoek', continent: 'Africa', flag: '🇳🇦' },
+            
+            // Americas
+            { value: 'America/Adak', country: 'USA', city: 'Adak', continent: 'Americas', flag: '🇺🇸' },
+            { value: 'America/Anchorage', country: 'USA', city: 'Anchorage', continent: 'Americas', flag: '🇺🇸' },
+            { value: 'America/Anguilla', country: 'Anguilla', city: 'Anguilla', continent: 'Americas', flag: '🇦🇮' },
+            { value: 'America/Antigua', country: 'Antigua and Barbuda', city: 'Antigua', continent: 'Americas', flag: '🇦🇬' },
+            { value: 'America/Araguaina', country: 'Brazil', city: 'Araguaína', continent: 'Americas', flag: '🇧🇷' },
+            { value: 'America/Argentina/Buenos_Aires', country: 'Argentina', city: 'Buenos Aires', continent: 'Americas', flag: '🇦🇷' },
+            { value: 'America/Argentina/Catamarca', country: 'Argentina', city: 'Catamarca', continent: 'Americas', flag: '🇦🇷' },
+            { value: 'America/Argentina/Cordoba', country: 'Argentina', city: 'Córdoba', continent: 'Americas', flag: '🇦🇷' },
+            { value: 'America/Argentina/Jujuy', country: 'Argentina', city: 'Jujuy', continent: 'Americas', flag: '🇦🇷' },
+            { value: 'America/Argentina/La_Rioja', country: 'Argentina', city: 'La Rioja', continent: 'Americas', flag: '🇦🇷' },
+            { value: 'America/Argentina/Mendoza', country: 'Argentina', city: 'Mendoza', continent: 'Americas', flag: '🇦🇷' },
+            { value: 'America/Argentina/Rio_Gallegos', country: 'Argentina', city: 'Río Gallegos', continent: 'Americas', flag: '🇦🇷' },
+            { value: 'America/Argentina/Salta', country: 'Argentina', city: 'Salta', continent: 'Americas', flag: '🇦🇷' },
+            { value: 'America/Argentina/San_Juan', country: 'Argentina', city: 'San Juan', continent: 'Americas', flag: '🇦🇷' },
+            { value: 'America/Argentina/San_Luis', country: 'Argentina', city: 'San Luis', continent: 'Americas', flag: '🇦🇷' },
+            { value: 'America/Argentina/Tucuman', country: 'Argentina', city: 'Tucumán', continent: 'Americas', flag: '🇦🇷' },
+            { value: 'America/Argentina/Ushuaia', country: 'Argentina', city: 'Ushuaia', continent: 'Americas', flag: '🇦🇷' },
+            { value: 'America/Aruba', country: 'Aruba', city: 'Aruba', continent: 'Americas', flag: '🇦🇼' },
+            { value: 'America/Asuncion', country: 'Paraguay', city: 'Asunción', continent: 'Americas', flag: '🇵🇾' },
+            { value: 'America/Atikokan', country: 'Canada', city: 'Atikokan', continent: 'Americas', flag: '🇨🇦' },
+            { value: 'America/Bahia', country: 'Brazil', city: 'Bahia', continent: 'Americas', flag: '🇧🇷' },
+            { value: 'America/Bahia_Banderas', country: 'Mexico', city: 'Bahía de Banderas', continent: 'Americas', flag: '🇲🇽' },
+            { value: 'America/Barbados', country: 'Barbados', city: 'Barbados', continent: 'Americas', flag: '🇧🇧' },
+            { value: 'America/Belem', country: 'Brazil', city: 'Belém', continent: 'Americas', flag: '🇧🇷' },
+            { value: 'America/Belize', country: 'Belize', city: 'Belize', continent: 'Americas', flag: '🇧🇿' },
+            { value: 'America/Blanc-Sablon', country: 'Canada', city: 'Blanc-Sablon', continent: 'Americas', flag: '🇨🇦' },
+            { value: 'America/Boa_Vista', country: 'Brazil', city: 'Boa Vista', continent: 'Americas', flag: '🇧🇷' },
+            { value: 'America/Bogota', country: 'Colombia', city: 'Bogotá', continent: 'Americas', flag: '🇨🇴' },
+            { value: 'America/Boise', country: 'USA', city: 'Boise', continent: 'Americas', flag: '🇺🇸' },
+            { value: 'America/Cambridge_Bay', country: 'Canada', city: 'Cambridge Bay', continent: 'Americas', flag: '🇨🇦' },
+            { value: 'America/Campo_Grande', country: 'Brazil', city: 'Campo Grande', continent: 'Americas', flag: '🇧🇷' },
+            { value: 'America/Cancun', country: 'Mexico', city: 'Cancún', continent: 'Americas', flag: '🇲🇽' },
+            { value: 'America/Caracas', country: 'Venezuela', city: 'Caracas', continent: 'Americas', flag: '🇻🇪' },
+            { value: 'America/Cayenne', country: 'French Guiana', city: 'Cayenne', continent: 'Americas', flag: '🇬🇫' },
+            { value: 'America/Cayman', country: 'Cayman Islands', city: 'Cayman', continent: 'Americas', flag: '🇰🇾' },
+            { value: 'America/Chicago', country: 'USA', city: 'Chicago', continent: 'Americas', flag: '🇺🇸' },
+            { value: 'America/Chihuahua', country: 'Mexico', city: 'Chihuahua', continent: 'Americas', flag: '🇲🇽' },
+            { value: 'America/Costa_Rica', country: 'Costa Rica', city: 'Costa Rica', continent: 'Americas', flag: '🇨🇷' },
+            { value: 'America/Creston', country: 'Canada', city: 'Creston', continent: 'Americas', flag: '🇨🇦' },
+            { value: 'America/Cuiaba', country: 'Brazil', city: 'Cuiabá', continent: 'Americas', flag: '🇧🇷' },
+            { value: 'America/Curacao', country: 'Curaçao', city: 'Curaçao', continent: 'Americas', flag: '🇨🇼' },
+            { value: 'America/Danmarkshavn', country: 'Denmark', city: 'Danmarkshavn', continent: 'Americas', flag: '🇩🇰' },
+            { value: 'America/Dawson', country: 'Canada', city: 'Dawson', continent: 'Americas', flag: '🇨🇦' },
+            { value: 'America/Dawson_Creek', country: 'Canada', city: 'Dawson Creek', continent: 'Americas', flag: '🇨🇦' },
+            { value: 'America/Denver', country: 'USA', city: 'Denver', continent: 'Americas', flag: '🇺🇸' },
+            { value: 'America/Detroit', country: 'USA', city: 'Detroit', continent: 'Americas', flag: '🇺🇸' },
+            { value: 'America/Dominica', country: 'Dominica', city: 'Dominica', continent: 'Americas', flag: '🇩🇲' },
+            { value: 'America/Edmonton', country: 'Canada', city: 'Edmonton', continent: 'Americas', flag: '🇨🇦' },
+            { value: 'America/Eirunepe', country: 'Brazil', city: 'Eirunepé', continent: 'Americas', flag: '🇧🇷' },
+            { value: 'America/El_Salvador', country: 'El Salvador', city: 'El Salvador', continent: 'Americas', flag: '🇸🇻' },
+            { value: 'America/Fort_Nelson', country: 'Canada', city: 'Fort Nelson', continent: 'Americas', flag: '🇨🇦' },
+            { value: 'America/Fortaleza', country: 'Brazil', city: 'Fortaleza', continent: 'Americas', flag: '🇧🇷' },
+            { value: 'America/Glace_Bay', country: 'Canada', city: 'Glace Bay', continent: 'Americas', flag: '🇨🇦' },
+            { value: 'America/Godthab', country: 'Greenland', city: 'Nuuk', continent: 'Americas', flag: '🇬🇱' },
+            { value: 'America/Goose_Bay', country: 'Canada', city: 'Goose Bay', continent: 'Americas', flag: '🇨🇦' },
+            { value: 'America/Grand_Turk', country: 'Turks and Caicos Islands', city: 'Grand Turk', continent: 'Americas', flag: '🇹🇨' },
+            { value: 'America/Grenada', country: 'Grenada', city: 'Grenada', continent: 'Americas', flag: '🇬🇩' },
+            { value: 'America/Guadeloupe', country: 'Guadeloupe', city: 'Guadeloupe', continent: 'Americas', flag: '🇬🇵' },
+            { value: 'America/Guatemala', country: 'Guatemala', city: 'Guatemala', continent: 'Americas', flag: '🇬🇹' },
+            { value: 'America/Guayaquil', country: 'Ecuador', city: 'Guayaquil', continent: 'Americas', flag: '🇪🇨' },
+            { value: 'America/Guyana', country: 'Guyana', city: 'Guyana', continent: 'Americas', flag: '🇬🇾' },
+            { value: 'America/Halifax', country: 'Canada', city: 'Halifax', continent: 'Americas', flag: '🇨🇦' },
+            { value: 'America/Havana', country: 'Cuba', city: 'Havana', continent: 'Americas', flag: '🇨🇺' },
+            { value: 'America/Hermosillo', country: 'Mexico', city: 'Hermosillo', continent: 'Americas', flag: '🇲🇽' },
+            { value: 'America/Indiana/Indianapolis', country: 'USA', city: 'Indianapolis', continent: 'Americas', flag: '🇺🇸' },
+            { value: 'America/Indiana/Knox', country: 'USA', city: 'Knox', continent: 'Americas', flag: '🇺🇸' },
+            { value: 'America/Indiana/Marengo', country: 'USA', city: 'Marengo', continent: 'Americas', flag: '🇺🇸' },
+            { value: 'America/Indiana/Petersburg', country: 'USA', city: 'Petersburg', continent: 'Americas', flag: '🇺🇸' },
+            { value: 'America/Indiana/Tell_City', country: 'USA', city: 'Tell City', continent: 'Americas', flag: '🇺🇸' },
+            { value: 'America/Indiana/Vevay', country: 'USA', city: 'Vevay', continent: 'Americas', flag: '🇺🇸' },
+            { value: 'America/Indiana/Vincennes', country: 'USA', city: 'Vincennes', continent: 'Americas', flag: '🇺🇸' },
+            { value: 'America/Indiana/Winamac', country: 'USA', city: 'Winamac', continent: 'Americas', flag: '🇺🇸' },
+            { value: 'America/Inuvik', country: 'Canada', city: 'Inuvik', continent: 'Americas', flag: '🇨🇦' },
+            { value: 'America/Iqaluit', country: 'Canada', city: 'Iqaluit', continent: 'Americas', flag: '🇨🇦' },
+            { value: 'America/Jamaica', country: 'Jamaica', city: 'Jamaica', continent: 'Americas', flag: '🇯🇲' },
+            { value: 'America/Juneau', country: 'USA', city: 'Juneau', continent: 'Americas', flag: '🇺🇸' },
+            { value: 'America/Kentucky/Louisville', country: 'USA', city: 'Louisville', continent: 'Americas', flag: '🇺🇸' },
+            { value: 'America/Kentucky/Monticello', country: 'USA', city: 'Monticello', continent: 'Americas', flag: '🇺🇸' },
+            { value: 'America/Kralendijk', country: 'Caribbean Netherlands', city: 'Kralendijk', continent: 'Americas', flag: '🇧🇶' },
+            { value: 'America/La_Paz', country: 'Bolivia', city: 'La Paz', continent: 'Americas', flag: '🇧🇴' },
+            { value: 'America/Lima', country: 'Peru', city: 'Lima', continent: 'Americas', flag: '🇵🇪' },
+            { value: 'America/Los_Angeles', country: 'USA', city: 'Los Angeles', continent: 'Americas', flag: '🇺🇸' },
+            { value: 'America/Lower_Princes', country: 'Sint Maarten', city: 'Lower Prince\'s Quarter', continent: 'Americas', flag: '🇸🇽' },
+            { value: 'America/Maceio', country: 'Brazil', city: 'Maceió', continent: 'Americas', flag: '🇧🇷' },
+            { value: 'America/Managua', country: 'Nicaragua', city: 'Managua', continent: 'Americas', flag: '🇳🇮' },
+            { value: 'America/Manaus', country: 'Brazil', city: 'Manaus', continent: 'Americas', flag: '🇧🇷' },
+            { value: 'America/Marigot', country: 'Saint Martin', city: 'Marigot', continent: 'Americas', flag: '🇲🇫' },
+            { value: 'America/Martinique', country: 'Martinique', city: 'Martinique', continent: 'Americas', flag: '🇲🇶' },
+            { value: 'America/Matamoros', country: 'Mexico', city: 'Matamoros', continent: 'Americas', flag: '🇲🇽' },
+            { value: 'America/Mazatlan', country: 'Mexico', city: 'Mazatlán', continent: 'Americas', flag: '🇲🇽' },
+            { value: 'America/Menominee', country: 'USA', city: 'Menominee', continent: 'Americas', flag: '🇺🇸' },
+            { value: 'America/Merida', country: 'Mexico', city: 'Mérida', continent: 'Americas', flag: '🇲🇽' },
+            { value: 'America/Metlakatla', country: 'USA', city: 'Metlakatla', continent: 'Americas', flag: '🇺🇸' },
+            { value: 'America/Mexico_City', country: 'Mexico', city: 'Mexico City', continent: 'Americas', flag: '🇲🇽' },
+            { value: 'America/Miquelon', country: 'Saint Pierre and Miquelon', city: 'Miquelon', continent: 'Americas', flag: '🇵🇲' },
+            { value: 'America/Moncton', country: 'Canada', city: 'Moncton', continent: 'Americas', flag: '🇨🇦' },
+            { value: 'America/Monterrey', country: 'Mexico', city: 'Monterrey', continent: 'Americas', flag: '🇲🇽' },
+            { value: 'America/Montevideo', country: 'Uruguay', city: 'Montevideo', continent: 'Americas', flag: '🇺🇾' },
+            { value: 'America/Montserrat', country: 'Montserrat', city: 'Montserrat', continent: 'Americas', flag: '🇲🇸' },
+            { value: 'America/Nassau', country: 'Bahamas', city: 'Nassau', continent: 'Americas', flag: '🇧🇸' },
+            { value: 'America/New_York', country: 'USA', city: 'New York', continent: 'Americas', flag: '🇺🇸' },
+            { value: 'America/Nipigon', country: 'Canada', city: 'Nipigon', continent: 'Americas', flag: '🇨🇦' },
+            { value: 'America/Nome', country: 'USA', city: 'Nome', continent: 'Americas', flag: '🇺🇸' },
+            { value: 'America/Noronha', country: 'Brazil', city: 'Fernando de Noronha', continent: 'Americas', flag: '🇧🇷' },
+            { value: 'America/North_Dakota/Beulah', country: 'USA', city: 'Beulah', continent: 'Americas', flag: '🇺🇸' },
+            { value: 'America/North_Dakota/Center', country: 'USA', city: 'Center', continent: 'Americas', flag: '🇺🇸' },
+            { value: 'America/North_Dakota/New_Salem', country: 'USA', city: 'New Salem', continent: 'Americas', flag: '🇺🇸' },
+            { value: 'America/Ojinaga', country: 'Mexico', city: 'Ojinaga', continent: 'Americas', flag: '🇲🇽' },
+            { value: 'America/Panama', country: 'Panama', city: 'Panama', continent: 'Americas', flag: '🇵🇦' },
+            { value: 'America/Pangnirtung', country: 'Canada', city: 'Pangnirtung', continent: 'Americas', flag: '🇨🇦' },
+            { value: 'America/Paramaribo', country: 'Suriname', city: 'Paramaribo', continent: 'Americas', flag: '🇸🇷' },
+            { value: 'America/Phoenix', country: 'USA', city: 'Phoenix', continent: 'Americas', flag: '🇺🇸' },
+            { value: 'America/Port-au-Prince', country: 'Haiti', city: 'Port-au-Prince', continent: 'Americas', flag: '🇭🇹' },
+            { value: 'America/Port_of_Spain', country: 'Trinidad and Tobago', city: 'Port of Spain', continent: 'Americas', flag: '🇹🇹' },
+            { value: 'America/Porto_Velho', country: 'Brazil', city: 'Porto Velho', continent: 'Americas', flag: '🇧🇷' },
+            { value: 'America/Puerto_Rico', country: 'Puerto Rico', city: 'Puerto Rico', continent: 'Americas', flag: '🇵🇷' },
+            { value: 'America/Punta_Arenas', country: 'Chile', city: 'Punta Arenas', continent: 'Americas', flag: '🇨🇱' },
+            { value: 'America/Rainy_River', country: 'Canada', city: 'Rainy River', continent: 'Americas', flag: '🇨🇦' },
+            { value: 'America/Rankin_Inlet', country: 'Canada', city: 'Rankin Inlet', continent: 'Americas', flag: '🇨🇦' },
+            { value: 'America/Recife', country: 'Brazil', city: 'Recife', continent: 'Americas', flag: '🇧🇷' },
+            { value: 'America/Regina', country: 'Canada', city: 'Regina', continent: 'Americas', flag: '🇨🇦' },
+            { value: 'America/Resolute', country: 'Canada', city: 'Resolute', continent: 'Americas', flag: '🇨🇦' },
+            { value: 'America/Rio_Branco', country: 'Brazil', city: 'Rio Branco', continent: 'Americas', flag: '🇧🇷' },
+            { value: 'America/Santarem', country: 'Brazil', city: 'Santarém', continent: 'Americas', flag: '🇧🇷' },
+            { value: 'America/Santiago', country: 'Chile', city: 'Santiago', continent: 'Americas', flag: '🇨🇱' },
+            { value: 'America/Santo_Domingo', country: 'Dominican Republic', city: 'Santo Domingo', continent: 'Americas', flag: '🇩🇴' },
+            { value: 'America/Sao_Paulo', country: 'Brazil', city: 'São Paulo', continent: 'Americas', flag: '🇧🇷' },
+            { value: 'America/Scoresbysund', country: 'Denmark', city: 'Ittoqqortoormiit', continent: 'Americas', flag: '🇩🇰' },
+            { value: 'America/Sitka', country: 'USA', city: 'Sitka', continent: 'Americas', flag: '🇺🇸' },
+            { value: 'America/St_Barthelemy', country: 'Saint Barthélemy', city: 'St. Barthélemy', continent: 'Americas', flag: '🇧🇱' },
+            { value: 'America/St_Johns', country: 'Canada', city: 'St. John\'s', continent: 'Americas', flag: '🇨🇦' },
+            { value: 'America/St_Kitts', country: 'Saint Kitts and Nevis', city: 'St. Kitts', continent: 'Americas', flag: '🇰🇳' },
+            { value: 'America/St_Lucia', country: 'Saint Lucia', city: 'St. Lucia', continent: 'Americas', flag: '🇱🇨' },
+            { value: 'America/St_Thomas', country: 'US Virgin Islands', city: 'St. Thomas', continent: 'Americas', flag: '🇻🇮' },
+            { value: 'America/St_Vincent', country: 'Saint Vincent and the Grenadines', city: 'St. Vincent', continent: 'Americas', flag: '🇻🇨' },
+            { value: 'America/Swift_Current', country: 'Canada', city: 'Swift Current', continent: 'Americas', flag: '🇨🇦' },
+            { value: 'America/Tegucigalpa', country: 'Honduras', city: 'Tegucigalpa', continent: 'Americas', flag: '🇭🇳' },
+            { value: 'America/Thule', country: 'Denmark', city: 'Qaanaaq', continent: 'Americas', flag: '🇩🇰' },
+            { value: 'America/Thunder_Bay', country: 'Canada', city: 'Thunder Bay', continent: 'Americas', flag: '🇨🇦' },
+            { value: 'America/Tijuana', country: 'Mexico', city: 'Tijuana', continent: 'Americas', flag: '🇲🇽' },
+            { value: 'America/Toronto', country: 'Canada', city: 'Toronto', continent: 'Americas', flag: '🇨🇦' },
+            { value: 'America/Tortola', country: 'British Virgin Islands', city: 'Tortola', continent: 'Americas', flag: '🇻🇬' },
+            { value: 'America/Vancouver', country: 'Canada', city: 'Vancouver', continent: 'Americas', flag: '🇨🇦' },
+            { value: 'America/Whitehorse', country: 'Canada', city: 'Whitehorse', continent: 'Americas', flag: '🇨🇦' },
+            { value: 'America/Winnipeg', country: 'Canada', city: 'Winnipeg', continent: 'Americas', flag: '🇨🇦' },
+            { value: 'America/Yakutat', country: 'USA', city: 'Yakutat', continent: 'Americas', flag: '🇺🇸' },
+            { value: 'America/Yellowknife', country: 'Canada', city: 'Yellowknife', continent: 'Americas', flag: '🇨🇦' },
+            
+            // Antarctica
+            { value: 'Antarctica/Casey', country: 'Australia', city: 'Casey Station', continent: 'Antarctica', flag: '🇦🇶' },
+            { value: 'Antarctica/Davis', country: 'Australia', city: 'Davis Station', continent: 'Antarctica', flag: '🇦🇶' },
+            { value: 'Antarctica/DumontDUrville', country: 'France', city: 'Dumont d\'Urville Station', continent: 'Antarctica', flag: '🇦🇶' },
+            { value: 'Antarctica/Macquarie', country: 'Australia', city: 'Macquarie Island', continent: 'Antarctica', flag: '🇦🇶' },
+            { value: 'Antarctica/Mawson', country: 'Australia', city: 'Mawson Station', continent: 'Antarctica', flag: '🇦🇶' },
+            { value: 'Antarctica/McMurdo', country: 'USA', city: 'McMurdo Station', continent: 'Antarctica', flag: '🇦🇶' },
+            { value: 'Antarctica/Palmer', country: 'USA', city: 'Palmer Station', continent: 'Antarctica', flag: '🇦🇶' },
+            { value: 'Antarctica/Rothera', country: 'UK', city: 'Rothera Research Station', continent: 'Antarctica', flag: '🇦🇶' },
+            { value: 'Antarctica/Syowa', country: 'Japan', city: 'Syowa Station', continent: 'Antarctica', flag: '🇦🇶' },
+            { value: 'Antarctica/Troll', country: 'Norway', city: 'Troll Station', continent: 'Antarctica', flag: '🇦🇶' },
+            { value: 'Antarctica/Vostok', country: 'Russia', city: 'Vostok Station', continent: 'Antarctica', flag: '🇦🇶' },
+            
+            // Asia
+            { value: 'Asia/Almaty', country: 'Kazakhstan', city: 'Almaty', continent: 'Asia', flag: '🇰🇿' },
+            { value: 'Asia/Amman', country: 'Jordan', city: 'Amman', continent: 'Asia', flag: '🇯🇴' },
+            { value: 'Asia/Anadyr', country: 'Russia', city: 'Anadyr', continent: 'Asia', flag: '🇷🇺' },
+            { value: 'Asia/Aqtau', country: 'Kazakhstan', city: 'Aqtau', continent: 'Asia', flag: '🇰🇿' },
+            { value: 'Asia/Aqtobe', country: 'Kazakhstan', city: 'Aqtobe', continent: 'Asia', flag: '🇰🇿' },
+            { value: 'Asia/Ashgabat', country: 'Turkmenistan', city: 'Ashgabat', continent: 'Asia', flag: '🇹🇲' },
+            { value: 'Asia/Atyrau', country: 'Kazakhstan', city: 'Atyrau', continent: 'Asia', flag: '🇰🇿' },
+            { value: 'Asia/Baghdad', country: 'Iraq', city: 'Baghdad', continent: 'Asia', flag: '🇮🇶' },
+            { value: 'Asia/Bahrain', country: 'Bahrain', city: 'Bahrain', continent: 'Asia', flag: '🇧🇭' },
+            { value: 'Asia/Baku', country: 'Azerbaijan', city: 'Baku', continent: 'Asia', flag: '🇦🇿' },
+            { value: 'Asia/Bangkok', country: 'Thailand', city: 'Bangkok', continent: 'Asia', flag: '🇹🇭' },
+            { value: 'Asia/Barnaul', country: 'Russia', city: 'Barnaul', continent: 'Asia', flag: '🇷🇺' },
+            { value: 'Asia/Beirut', country: 'Lebanon', city: 'Beirut', continent: 'Asia', flag: '🇱🇧' },
+            { value: 'Asia/Bishkek', country: 'Kyrgyzstan', city: 'Bishkek', continent: 'Asia', flag: '🇰🇬' },
+            { value: 'Asia/Brunei', country: 'Brunei', city: 'Brunei', continent: 'Asia', flag: '🇧🇳' },
+            { value: 'Asia/Chita', country: 'Russia', city: 'Chita', continent: 'Asia', flag: '🇷🇺' },
+            { value: 'Asia/Choibalsan', country: 'Mongolia', city: 'Choibalsan', continent: 'Asia', flag: '🇲🇳' },
+            { value: 'Asia/Colombo', country: 'Sri Lanka', city: 'Colombo', continent: 'Asia', flag: '🇱🇰' },
+            { value: 'Asia/Damascus', country: 'Syria', city: 'Damascus', continent: 'Asia', flag: '🇸🇾' },
+            { value: 'Asia/Dhaka', country: 'Bangladesh', city: 'Dhaka', continent: 'Asia', flag: '🇧🇩' },
+            { value: 'Asia/Dili', country: 'Timor-Leste', city: 'Dili', continent: 'Asia', flag: '🇹🇱' },
+            { value: 'Asia/Dubai', country: 'United Arab Emirates', city: 'Dubai', continent: 'Asia', flag: '🇦🇪' },
+            { value: 'Asia/Dushanbe', country: 'Tajikistan', city: 'Dushanbe', continent: 'Asia', flag: '🇹🇯' },
+            { value: 'Asia/Famagusta', country: 'Cyprus', city: 'Famagusta', continent: 'Asia', flag: '🇨🇾' },
+            { value: 'Asia/Gaza', country: 'Palestine', city: 'Gaza', continent: 'Asia', flag: '🇵🇸' },
+            { value: 'Asia/Hebron', country: 'Palestine', city: 'Hebron', continent: 'Asia', flag: '🇵🇸' },
+            { value: 'Asia/Ho_Chi_Minh', country: 'Vietnam', city: 'Ho Chi Minh City', continent: 'Asia', flag: '🇻🇳' },
+            { value: 'Asia/Hong_Kong', country: 'Hong Kong', city: 'Hong Kong', continent: 'Asia', flag: '🇭🇰' },
+            { value: 'Asia/Hovd', country: 'Mongolia', city: 'Hovd', continent: 'Asia', flag: '🇲🇳' },
+            { value: 'Asia/Irkutsk', country: 'Russia', city: 'Irkutsk', continent: 'Asia', flag: '🇷🇺' },
+            { value: 'Asia/Jakarta', country: 'Indonesia', city: 'Jakarta', continent: 'Asia', flag: '🇮🇩' },
+            { value: 'Asia/Jayapura', country: 'Indonesia', city: 'Jayapura', continent: 'Asia', flag: '🇮🇩' },
+            { value: 'Asia/Jerusalem', country: 'Israel', city: 'Jerusalem', continent: 'Asia', flag: '🇮🇱' },
+            { value: 'Asia/Kabul', country: 'Afghanistan', city: 'Kabul', continent: 'Asia', flag: '🇦🇫' },
+            { value: 'Asia/Kamchatka', country: 'Russia', city: 'Petropavlovsk-Kamchatsky', continent: 'Asia', flag: '🇷🇺' },
+            { value: 'Asia/Karachi', country: 'Pakistan', city: 'Karachi', continent: 'Asia', flag: '🇵🇰' },
+            { value: 'Asia/Kathmandu', country: 'Nepal', city: 'Kathmandu', continent: 'Asia', flag: '🇳🇵' },
+            { value: 'Asia/Khandyga', country: 'Russia', city: 'Khandyga', continent: 'Asia', flag: '🇷🇺' },
+            { value: 'Asia/Kolkata', country: 'India', city: 'Kolkata', continent: 'Asia', flag: '🇮🇳' },
+            { value: 'Asia/Krasnoyarsk', country: 'Russia', city: 'Krasnoyarsk', continent: 'Asia', flag: '🇷🇺' },
+            { value: 'Asia/Kuala_Lumpur', country: 'Malaysia', city: 'Kuala Lumpur', continent: 'Asia', flag: '🇲🇾' },
+            { value: 'Asia/Kuching', country: 'Malaysia', city: 'Kuching', continent: 'Asia', flag: '🇲🇾' },
+            { value: 'Asia/Macau', country: 'Macao', city: 'Macau', continent: 'Asia', flag: '🇲🇴' },
+            { value: 'Asia/Magadan', country: 'Russia', city: 'Magadan', continent: 'Asia', flag: '🇷🇺' },
+            { value: 'Asia/Makassar', country: 'Indonesia', city: 'Makassar', continent: 'Asia', flag: '🇮🇩' },
+            { value: 'Asia/Manila', country: 'Philippines', city: 'Manila', continent: 'Asia', flag: '🇵🇭' },
+            { value: 'Asia/Nicosia', country: 'Cyprus', city: 'Nicosia', continent: 'Asia', flag: '🇨🇾' },
+            { value: 'Asia/Novokuznetsk', country: 'Russia', city: 'Novokuznetsk', continent: 'Asia', flag: '🇷🇺' },
+            { value: 'Asia/Novosibirsk', country: 'Russia', city: 'Novosibirsk', continent: 'Asia', flag: '🇷🇺' },
+            { value: 'Asia/Omsk', country: 'Russia', city: 'Omsk', continent: 'Asia', flag: '🇷🇺' },
+            { value: 'Asia/Oral', country: 'Kazakhstan', city: 'Oral', continent: 'Asia', flag: '🇰🇿' },
+            { value: 'Asia/Pontianak', country: 'Indonesia', city: 'Pontianak', continent: 'Asia', flag: '🇮🇩' },
+            { value: 'Asia/Pyongyang', country: 'North Korea', city: 'Pyongyang', continent: 'Asia', flag: '🇰🇵' },
+            { value: 'Asia/Qatar', country: 'Qatar', city: 'Qatar', continent: 'Asia', flag: '🇶🇦' },
+            { value: 'Asia/Qostanay', country: 'Kazakhstan', city: 'Kostanay', continent: 'Asia', flag: '🇰🇿' },
+            { value: 'Asia/Qyzylorda', country: 'Kazakhstan', city: 'Kyzylorda', continent: 'Asia', flag: '🇰🇿' },
+            { value: 'Asia/Riyadh', country: 'Saudi Arabia', city: 'Riyadh', continent: 'Asia', flag: '🇸🇦' },
+            { value: 'Asia/Sakhalin', country: 'Russia', city: 'Yuzhno-Sakhalinsk', continent: 'Asia', flag: '🇷🇺' },
+            { value: 'Asia/Samarkand', country: 'Uzbekistan', city: 'Samarkand', continent: 'Asia', flag: '🇺🇿' },
+            { value: 'Asia/Seoul', country: 'South Korea', city: 'Seoul', continent: 'Asia', flag: '🇰🇷' },
+            { value: 'Asia/Shanghai', country: 'China', city: 'Shanghai', continent: 'Asia', flag: '🇨🇳' },
+            { value: 'Asia/Singapore', country: 'Singapore', city: 'Singapore', continent: 'Asia', flag: '🇸🇬' },
+            { value: 'Asia/Srednekolymsk', country: 'Russia', city: 'Srednekolymsk', continent: 'Asia', flag: '🇷🇺' },
+            { value: 'Asia/Taipei', country: 'Taiwan', city: 'Taipei', continent: 'Asia', flag: '🇹🇼' },
+            { value: 'Asia/Tashkent', country: 'Uzbekistan', city: 'Tashkent', continent: 'Asia', flag: '🇺🇿' },
+            { value: 'Asia/Tbilisi', country: 'Georgia', city: 'Tbilisi', continent: 'Asia', flag: '🇬🇪' },
+            { value: 'Asia/Tehran', country: 'Iran', city: 'Tehran', continent: 'Asia', flag: '🇮🇷' },
+            { value: 'Asia/Thimphu', country: 'Bhutan', city: 'Thimphu', continent: 'Asia', flag: '🇧🇹' },
+            { value: 'Asia/Tokyo', country: 'Japan', city: 'Tokyo', continent: 'Asia', flag: '🇯🇵' },
+            { value: 'Asia/Tomsk', country: 'Russia', city: 'Tomsk', continent: 'Asia', flag: '🇷🇺' },
+            { value: 'Asia/Ulaanbaatar', country: 'Mongolia', city: 'Ulaanbaatar', continent: 'Asia', flag: '🇲🇳' },
+            { value: 'Asia/Urumqi', country: 'China', city: 'Ürümqi', continent: 'Asia', flag: '🇨🇳' },
+            { value: 'Asia/Ust-Nera', country: 'Russia', city: 'Ust-Nera', continent: 'Asia', flag: '🇷🇺' },
+            { value: 'Asia/Vientiane', country: 'Laos', city: 'Vientiane', continent: 'Asia', flag: '🇱🇦' },
+            { value: 'Asia/Vladivostok', country: 'Russia', city: 'Vladivostok', continent: 'Asia', flag: '🇷🇺' },
+            { value: 'Asia/Yakutsk', country: 'Russia', city: 'Yakutsk', continent: 'Asia', flag: '🇷🇺' },
+            { value: 'Asia/Yangon', country: 'Myanmar', city: 'Yangon', continent: 'Asia', flag: '🇲🇲' },
+            { value: 'Asia/Yekaterinburg', country: 'Russia', city: 'Yekaterinburg', continent: 'Asia', flag: '🇷🇺' },
+            { value: 'Asia/Yerevan', country: 'Armenia', city: 'Yerevan', continent: 'Asia', flag: '🇦🇲' },
+            
+            // Atlantic
+            { value: 'Atlantic/Azores', country: 'Portugal', city: 'Azores', continent: 'Atlantic', flag: '🇵🇹' },
+            { value: 'Atlantic/Bermuda', country: 'Bermuda', city: 'Bermuda', continent: 'Atlantic', flag: '🇧🇲' },
+            { value: 'Atlantic/Canary', country: 'Spain', city: 'Canary Islands', continent: 'Atlantic', flag: '🇪🇸' },
+            { value: 'Atlantic/Cape_Verde', country: 'Cape Verde', city: 'Cape Verde', continent: 'Atlantic', flag: '🇨🇻' },
+            { value: 'Atlantic/Faroe', country: 'Faroe Islands', city: 'Faroe Islands', continent: 'Atlantic', flag: '🇫🇴' },
+            { value: 'Atlantic/Madeira', country: 'Portugal', city: 'Madeira', continent: 'Atlantic', flag: '🇵🇹' },
+            { value: 'Atlantic/Reykjavik', country: 'Iceland', city: 'Reykjavik', continent: 'Atlantic', flag: '🇮🇸' },
+            { value: 'Atlantic/South_Georgia', country: 'UK', city: 'South Georgia', continent: 'Atlantic', flag: '🇬🇸' },
+            { value: 'Atlantic/Stanley', country: 'Falkland Islands', city: 'Stanley', continent: 'Atlantic', flag: '🇫🇰' },
+            { value: 'Atlantic/St_Helena', country: 'UK', city: 'St. Helena', continent: 'Atlantic', flag: '🇸🇭' },
+            
+            // Australia & Pacific
+            { value: 'Australia/Adelaide', country: 'Australia', city: 'Adelaide', continent: 'Australia', flag: '🇦🇺' },
+            { value: 'Australia/Brisbane', country: 'Australia', city: 'Brisbane', continent: 'Australia', flag: '🇦🇺' },
+            { value: 'Australia/Broken_Hill', country: 'Australia', city: 'Broken Hill', continent: 'Australia', flag: '🇦🇺' },
+            { value: 'Australia/Currie', country: 'Australia', city: 'Currie', continent: 'Australia', flag: '🇦🇺' },
+            { value: 'Australia/Darwin', country: 'Australia', city: 'Darwin', continent: 'Australia', flag: '🇦🇺' },
+            { value: 'Australia/Eucla', country: 'Australia', city: 'Eucla', continent: 'Australia', flag: '🇦🇺' },
+            { value: 'Australia/Hobart', country: 'Australia', city: 'Hobart', continent: 'Australia', flag: '🇦🇺' },
+            { value: 'Australia/Lindeman', country: 'Australia', city: 'Lindeman Islands', continent: 'Australia', flag: '🇦🇺' },
+            { value: 'Australia/Lord_Howe', country: 'Australia', city: 'Lord Howe Island', continent: 'Australia', flag: '🇦🇺' },
+            { value: 'Australia/Melbourne', country: 'Australia', city: 'Melbourne', continent: 'Australia', flag: '🇦🇺' },
+            { value: 'Australia/Perth', country: 'Australia', city: 'Perth', continent: 'Australia', flag: '🇦🇺' },
+            { value: 'Australia/Sydney', country: 'Australia', city: 'Sydney', continent: 'Australia', flag: '🇦🇺' },
+            
+            // Europe
+            { value: 'Europe/Amsterdam', country: 'Netherlands', city: 'Amsterdam', continent: 'Europe', flag: '🇳🇱' },
+            { value: 'Europe/Andorra', country: 'Andorra', city: 'Andorra', continent: 'Europe', flag: '🇦🇩' },
+            { value: 'Europe/Astrakhan', country: 'Russia', city: 'Astrakhan', continent: 'Europe', flag: '🇷🇺' },
+            { value: 'Europe/Athens', country: 'Greece', city: 'Athens', continent: 'Europe', flag: '🇬🇷' },
+            { value: 'Europe/Belgrade', country: 'Serbia', city: 'Belgrade', continent: 'Europe', flag: '🇷🇸' },
+            { value: 'Europe/Berlin', country: 'Germany', city: 'Berlin', continent: 'Europe', flag: '🇩🇪' },
+            { value: 'Europe/Bratislava', country: 'Slovakia', city: 'Bratislava', continent: 'Europe', flag: '🇸🇰' },
+            { value: 'Europe/Brussels', country: 'Belgium', city: 'Brussels', continent: 'Europe', flag: '🇧🇪' },
+            { value: 'Europe/Bucharest', country: 'Romania', city: 'Bucharest', continent: 'Europe', flag: '🇷🇴' },
+            { value: 'Europe/Budapest', country: 'Hungary', city: 'Budapest', continent: 'Europe', flag: '🇭🇺' },
+            { value: 'Europe/Busingen', country: 'Germany', city: 'Büsingen', continent: 'Europe', flag: '🇩🇪' },
+            { value: 'Europe/Chisinau', country: 'Moldova', city: 'Chișinău', continent: 'Europe', flag: '🇲🇩' },
+            { value: 'Europe/Copenhagen', country: 'Denmark', city: 'Copenhagen', continent: 'Europe', flag: '🇩🇰' },
+            { value: 'Europe/Dublin', country: 'Ireland', city: 'Dublin', continent: 'Europe', flag: '🇮🇪' },
+            { value: 'Europe/Gibraltar', country: 'UK', city: 'Gibraltar', continent: 'Europe', flag: '🇬🇮' },
+            { value: 'Europe/Guernsey', country: 'UK', city: 'Guernsey', continent: 'Europe', flag: '🇬🇬' },
+            { value: 'Europe/Helsinki', country: 'Finland', city: 'Helsinki', continent: 'Europe', flag: '🇫🇮' },
+            { value: 'Europe/Isle_of_Man', country: 'UK', city: 'Isle of Man', continent: 'Europe', flag: '🇮🇲' },
+            { value: 'Europe/Istanbul', country: 'Turkey', city: 'Istanbul', continent: 'Europe', flag: '🇹🇷' },
+            { value: 'Europe/Jersey', country: 'UK', city: 'Jersey', continent: 'Europe', flag: '🇯🇪' },
+            { value: 'Europe/Kaliningrad', country: 'Russia', city: 'Kaliningrad', continent: 'Europe', flag: '🇷🇺' },
+            { value: 'Europe/Kiev', country: 'Ukraine', city: 'Kyiv', continent: 'Europe', flag: '🇺🇦' },
+            { value: 'Europe/Kirov', country: 'Russia', city: 'Kirov', continent: 'Europe', flag: '🇷🇺' },
+            { value: 'Europe/Lisbon', country: 'Portugal', city: 'Lisbon', continent: 'Europe', flag: '🇵🇹' },
+            { value: 'Europe/Ljubljana', country: 'Slovenia', city: 'Ljubljana', continent: 'Europe', flag: '🇸🇮' },
+            { value: 'Europe/London', country: 'UK', city: 'London', continent: 'Europe', flag: '🇬🇧' },
+            { value: 'Europe/Luxembourg', country: 'Luxembourg', city: 'Luxembourg', continent: 'Europe', flag: '🇱🇺' },
+            { value: 'Europe/Madrid', country: 'Spain', city: 'Madrid', continent: 'Europe', flag: '🇪🇸' },
+            { value: 'Europe/Malta', country: 'Malta', city: 'Malta', continent: 'Europe', flag: '🇲🇹' },
+            { value: 'Europe/Mariehamn', country: 'Åland Islands', city: 'Mariehamn', continent: 'Europe', flag: '🇦🇽' },
+            { value: 'Europe/Minsk', country: 'Belarus', city: 'Minsk', continent: 'Europe', flag: '🇧🇾' },
+            { value: 'Europe/Monaco', country: 'Monaco', city: 'Monaco', continent: 'Europe', flag: '🇲🇨' },
+            { value: 'Europe/Moscow', country: 'Russia', city: 'Moscow', continent: 'Europe', flag: '🇷🇺' },
+            { value: 'Europe/Oslo', country: 'Norway', city: 'Oslo', continent: 'Europe', flag: '🇳🇴' },
+            { value: 'Europe/Paris', country: 'France', city: 'Paris', continent: 'Europe', flag: '🇫🇷' },
+            { value: 'Europe/Podgorica', country: 'Montenegro', city: 'Podgorica', continent: 'Europe', flag: '🇲🇪' },
+            { value: 'Europe/Prague', country: 'Czech Republic', city: 'Prague', continent: 'Europe', flag: '🇨🇿' },
+            { value: 'Europe/Riga', country: 'Latvia', city: 'Riga', continent: 'Europe', flag: '🇱🇻' },
+            { value: 'Europe/Rome', country: 'Italy', city: 'Rome', continent: 'Europe', flag: '🇮🇹' },
+            { value: 'Europe/Samara', country: 'Russia', city: 'Samara', continent: 'Europe', flag: '🇷🇺' },
+            { value: 'Europe/San_Marino', country: 'San Marino', city: 'San Marino', continent: 'Europe', flag: '🇸🇲' },
+            { value: 'Europe/Sarajevo', country: 'Bosnia and Herzegovina', city: 'Sarajevo', continent: 'Europe', flag: '🇧🇦' },
+            { value: 'Europe/Simferopol', country: 'Russia', city: 'Simferopol', continent: 'Europe', flag: '🇷🇺' },
+            { value: 'Europe/Skopje', country: 'North Macedonia', city: 'Skopje', continent: 'Europe', flag: '🇲🇰' },
+            { value: 'Europe/Sofia', country: 'Bulgaria', city: 'Sofia', continent: 'Europe', flag: '🇧🇬' },
+            { value: 'Europe/Stockholm', country: 'Sweden', city: 'Stockholm', continent: 'Europe', flag: '🇸🇪' },
+            { value: 'Europe/Tallinn', country: 'Estonia', city: 'Tallinn', continent: 'Europe', flag: '🇪🇪' },
+            { value: 'Europe/Tirane', country: 'Albania', city: 'Tirana', continent: 'Europe', flag: '🇦🇱' },
+            { value: 'Europe/Ulyanovsk', country: 'Russia', city: 'Ulyanovsk', continent: 'Europe', flag: '🇷🇺' },
+            { value: 'Europe/Uzhgorod', country: 'Ukraine', city: 'Uzhhorod', continent: 'Europe', flag: '🇺🇦' },
+            { value: 'Europe/Vaduz', country: 'Liechtenstein', city: 'Vaduz', continent: 'Europe', flag: '🇱🇮' },
+            { value: 'Europe/Vatican', country: 'Vatican City', city: 'Vatican', continent: 'Europe', flag: '🇻🇦' },
+            { value: 'Europe/Vienna', country: 'Austria', city: 'Vienna', continent: 'Europe', flag: '🇦🇹' },
+            { value: 'Europe/Vilnius', country: 'Lithuania', city: 'Vilnius', continent: 'Europe', flag: '🇱🇹' },
+            { value: 'Europe/Volgograd', country: 'Russia', city: 'Volgograd', continent: 'Europe', flag: '🇷🇺' },
+            { value: 'Europe/Warsaw', country: 'Poland', city: 'Warsaw', continent: 'Europe', flag: '🇵🇱' },
+            { value: 'Europe/Zagreb', country: 'Croatia', city: 'Zagreb', continent: 'Europe', flag: '🇭🇷' },
+            { value: 'Europe/Zaporozhye', country: 'Ukraine', city: 'Zaporizhzhia', continent: 'Europe', flag: '🇺🇦' },
+            { value: 'Europe/Zurich', country: 'Switzerland', city: 'Zurich', continent: 'Europe', flag: '🇨🇭' },
+            
+            // Indian Ocean
+            { value: 'Indian/Antananarivo', country: 'Madagascar', city: 'Antananarivo', continent: 'Indian Ocean', flag: '🇲🇬' },
+            { value: 'Indian/Chagos', country: 'British Indian Ocean Territory', city: 'Diego Garcia', continent: 'Indian Ocean', flag: '🇮🇴' },
+            { value: 'Indian/Christmas', country: 'Australia', city: 'Christmas Island', continent: 'Indian Ocean', flag: '🇨🇽' },
+            { value: 'Indian/Cocos', country: 'Australia', city: 'Cocos Islands', continent: 'Indian Ocean', flag: '🇨🇨' },
+            { value: 'Indian/Comoro', country: 'Comoros', city: 'Comoros', continent: 'Indian Ocean', flag: '🇰🇲' },
+            { value: 'Indian/Kerguelen', country: 'France', city: 'Kerguelen Islands', continent: 'Indian Ocean', flag: '🇹🇫' },
+            { value: 'Indian/Mahe', country: 'Seychelles', city: 'Mahe', continent: 'Indian Ocean', flag: '🇸🇨' },
+            { value: 'Indian/Maldives', country: 'Maldives', city: 'Maldives', continent: 'Indian Ocean', flag: '🇲🇻' },
+            { value: 'Indian/Mauritius', country: 'Mauritius', city: 'Mauritius', continent: 'Indian Ocean', flag: '🇲🇺' },
+            { value: 'Indian/Mayotte', country: 'France', city: 'Mayotte', continent: 'Indian Ocean', flag: '🇾🇹' },
+            { value: 'Indian/Reunion', country: 'France', city: 'Réunion', continent: 'Indian Ocean', flag: '🇷🇪' },
+            
+            // Pacific
+            { value: 'Pacific/Apia', country: 'Samoa', city: 'Apia', continent: 'Pacific', flag: '🇼🇸' },
+            { value: 'Pacific/Auckland', country: 'New Zealand', city: 'Auckland', continent: 'Pacific', flag: '🇳🇿' },
+            { value: 'Pacific/Bougainville', country: 'Papua New Guinea', city: 'Bougainville', continent: 'Pacific', flag: '🇵🇬' },
+            { value: 'Pacific/Chatham', country: 'New Zealand', city: 'Chatham Islands', continent: 'Pacific', flag: '🇳🇿' },
+            { value: 'Pacific/Chuuk', country: 'Micronesia', city: 'Chuuk', continent: 'Pacific', flag: '🇫🇲' },
+            { value: 'Pacific/Easter', country: 'Chile', city: 'Easter Island', continent: 'Pacific', flag: '🇨🇱' },
+            { value: 'Pacific/Efate', country: 'Vanuatu', city: 'Efate', continent: 'Pacific', flag: '🇻🇺' },
+            { value: 'Pacific/Enderbury', country: 'Kiribati', city: 'Enderbury Island', continent: 'Pacific', flag: '🇰🇮' },
+            { value: 'Pacific/Fakaofo', country: 'Tokelau', city: 'Fakaofo', continent: 'Pacific', flag: '🇹🇰' },
+            { value: 'Pacific/Fiji', country: 'Fiji', city: 'Fiji', continent: 'Pacific', flag: '🇫🇯' },
+            { value: 'Pacific/Funafuti', country: 'Tuvalu', city: 'Funafuti', continent: 'Pacific', flag: '🇹🇻' },
+            { value: 'Pacific/Galapagos', country: 'Ecuador', city: 'Galapagos', continent: 'Pacific', flag: '🇪🇨' },
+            { value: 'Pacific/Gambier', country: 'France', city: 'Gambier Islands', continent: 'Pacific', flag: '🇵🇫' },
+            { value: 'Pacific/Guadalcanal', country: 'Solomon Islands', city: 'Guadalcanal', continent: 'Pacific', flag: '🇸🇧' },
+            { value: 'Pacific/Guam', country: 'USA', city: 'Guam', continent: 'Pacific', flag: '🇬🇺' },
+            { value: 'Pacific/Honolulu', country: 'USA', city: 'Honolulu', continent: 'Pacific', flag: '🇺🇸' },
+            { value: 'Pacific/Johnston', country: 'USA', city: 'Johnston Atoll', continent: 'Pacific', flag: '🇺🇸' },
+            { value: 'Pacific/Kiritimati', country: 'Kiribati', city: 'Kiritimati', continent: 'Pacific', flag: '🇰🇮' },
+            { value: 'Pacific/Kosrae', country: 'Micronesia', city: 'Kosrae', continent: 'Pacific', flag: '🇫🇲' },
+            { value: 'Pacific/Kwajalein', country: 'Marshall Islands', city: 'Kwajalein', continent: 'Pacific', flag: '🇲🇭' },
+            { value: 'Pacific/Majuro', country: 'Marshall Islands', city: 'Majuro', continent: 'Pacific', flag: '🇲🇭' },
+            { value: 'Pacific/Marquesas', country: 'France', city: 'Marquesas Islands', continent: 'Pacific', flag: '🇵🇫' },
+            { value: 'Pacific/Midway', country: 'USA', city: 'Midway Atoll', continent: 'Pacific', flag: '🇺🇸' },
+            { value: 'Pacific/Nauru', country: 'Nauru', city: 'Nauru', continent: 'Pacific', flag: '🇳🇷' },
+            { value: 'Pacific/Niue', country: 'New Zealand', city: 'Niue', continent: 'Pacific', flag: '🇳🇺' },
+            { value: 'Pacific/Norfolk', country: 'Australia', city: 'Norfolk Island', continent: 'Pacific', flag: '🇳🇫' },
+            { value: 'Pacific/Noumea', country: 'France', city: 'Nouméa', continent: 'Pacific', flag: '🇳🇨' },
+            { value: 'Pacific/Pago_Pago', country: 'American Samoa', city: 'Pago Pago', continent: 'Pacific', flag: '🇦🇸' },
+            { value: 'Pacific/Palau', country: 'Palau', city: 'Palau', continent: 'Pacific', flag: '🇵🇼' },
+            { value: 'Pacific/Pitcairn', country: 'UK', city: 'Pitcairn Islands', continent: 'Pacific', flag: '🇵🇳' },
+            { value: 'Pacific/Pohnpei', country: 'Micronesia', city: 'Pohnpei', continent: 'Pacific', flag: '🇫🇲' },
+            { value: 'Pacific/Port_Moresby', country: 'Papua New Guinea', city: 'Port Moresby', continent: 'Pacific', flag: '🇵🇬' },
+            { value: 'Pacific/Rarotonga', country: 'Cook Islands', city: 'Rarotonga', continent: 'Pacific', flag: '🇨🇰' },
+            { value: 'Pacific/Saipan', country: 'Northern Mariana Islands', city: 'Saipan', continent: 'Pacific', flag: '🇲🇵' },
+            { value: 'Pacific/Tahiti', country: 'France', city: 'Tahiti', continent: 'Pacific', flag: '🇵🇫' },
+            { value: 'Pacific/Tarawa', country: 'Kiribati', city: 'Tarawa', continent: 'Pacific', flag: '🇰🇮' },
+            { value: 'Pacific/Tongatapu', country: 'Tonga', city: 'Tongatapu', continent: 'Pacific', flag: '🇹🇴' },
+            { value: 'Pacific/Wake', country: 'USA', city: 'Wake Island', continent: 'Pacific', flag: '🇺🇲' },
+            { value: 'Pacific/Wallis', country: 'France', city: 'Wallis and Futuna', continent: 'Pacific', flag: '🇼🇫' },
+            
+            // UTC
+            { value: 'UTC', country: 'Universal', city: 'Coordinated Universal Time', continent: 'Universal', flag: '🌐' }
+        ];
+
+        // Current time
+        let currentTime = new Date();
+        let selectedLocation = null;
+        let targetLocations = [];
+        
+        // Update current time every second
+        setInterval(() => {
+            currentTime = new Date();
+            if (selectedLocation) {
+                updateCurrentTimeDisplay();
+            }
+            updateWorldClocks();
+            updateConvertedTimes();
+        }, 1000);
+
+        // Function to get timezone abbreviation
+        function getTimezoneAbbreviation(timezone) {
+            try {
+                const options = { timeZone: timezone, timeZoneName: 'short' };
+                const formatted = new Intl.DateTimeFormat('en-US', options).formatToParts(currentTime);
+                return formatted.find(part => part.type === 'timeZoneName')?.value || timezone.split('/').pop().replace(/_/g, ' ');
+            } catch (error) {
+                return timezone.split('/').pop().replace(/_/g, ' ');
+            }
+        }
+
+        // Function to get current time in a timezone
+        function getCurrentTimeInZone(timezone) {
+            const options = {
+                timeZone: timezone,
+                hour: '2-digit',
+                minute: '2-digit',
+                second: '2-digit',
+                hour12: true,
+            };
+            return new Intl.DateTimeFormat('en-US', options).format(currentTime);
+        }
+
+        // Function to get 24-hour format time
+        function getCurrentTime24Hour(timezone) {
+            const options = {
+                timeZone: timezone,
+                hour: '2-digit',
+                minute: '2-digit',
+                hour12: false,
+            };
+            return new Intl.DateTimeFormat('en-US', options).format(currentTime);
+        }
+
+        // Function to convert time from source to target timezone
+        function convertTime(sourceTime, sourceTimezone, targetTimezone) {
+            if (!sourceTime) return '--:-- --';
+            
+            try {
+                const [hours, minutes] = sourceTime.split(':');
+                const sourceDate = new Date();
+                sourceDate.setHours(parseInt(hours), parseInt(minutes), 0, 0);
+                
+                const options = {
+                    timeZone: targetTimezone,
+                    hour: '2-digit',
+                    minute: '2-digit',
+                    hour12: true,
+                };
+                
+                return new Intl.DateTimeFormat('en-US', options).format(sourceDate);
+            } catch (error) {
+                return 'Invalid time';
+            }
+        }
+
+        // Function to get day/night indicator
+        function getDayNightIndicator(timezone) {
+            const hours = new Date().toLocaleString('en-US', { timeZone: timezone, hour: 'numeric', hour12: false });
+            return (hours >= 6 && hours < 18) ? 'day' : 'night';
+        }
+
+        // Function to get weather icon and condition
+        function getWeatherData(timezone) {
+            const hours = new Date().toLocaleString('en-US', { timeZone: timezone, hour: 'numeric', hour12: false });
+            const isDay = hours >= 6 && hours < 18;
+            
+            // Weather based on region
+            if (timezone.includes('Africa')) {
+                return isDay ? { icon: 'fas fa-sun', condition: 'Sunny', temp: '28°C' } : { icon: 'fas fa-moon', condition: 'Clear', temp: '22°C' };
+            } else if (timezone.includes('Europe')) {
+                const conditions = isDay ? 
+                    ['Partly Cloudy', 'Sunny', 'Cloudy', 'Rainy'] : 
+                    ['Clear', 'Partly Cloudy', 'Cloudy', 'Rainy'];
+                const temps = isDay ? ['18°C', '20°C', '16°C', '14°C'] : ['12°C', '14°C', '10°C', '8°C'];
+                const index = Math.floor(Math.random() * conditions.length);
+                return { 
+                    icon: conditions[index] === 'Rainy' ? 'fas fa-cloud-rain' : 
+                           isDay ? 'fas fa-cloud-sun' : 'fas fa-cloud-moon', 
+                    condition: conditions[index], 
+                    temp: temps[index] 
+                };
+            } else if (timezone.includes('America')) {
+                return isDay ? { icon: 'fas fa-sun', condition: 'Sunny', temp: '22°C' } : { icon: 'fas fa-star', condition: 'Clear', temp: '15°C' };
+            } else if (timezone.includes('Asia')) {
+                return isDay ? { icon: 'fas fa-sun', condition: 'Sunny', temp: '30°C' } : { icon: 'fas fa-moon', condition: 'Clear', temp: '25°C' };
+            } else if (timezone.includes('Australia')) {
+                return isDay ? { icon: 'fas fa-sun', condition: 'Sunny', temp: '25°C' } : { icon: 'fas fa-moon', condition: 'Clear', temp: '18°C' };
+            } else {
+                return isDay ? { icon: 'fas fa-sun', condition: 'Sunny', temp: '20°C' } : { icon: 'fas fa-moon', condition: 'Clear', temp: '15°C' };
+            }
+        }
+
+        // Function to update current time display
+        function updateCurrentTimeDisplay() {
+            if (!selectedLocation) return;
+            
+            const timeString = getCurrentTimeInZone(selectedLocation.value);
+            document.getElementById('currentTime').textContent = timeString;
+            
+            document.getElementById('currentTimezone').textContent = 
+                `${selectedLocation.city}, ${selectedLocation.country} ${selectedLocation.flag}`;
+        }
+
+        // Function to update converted times
+        function updateConvertedTimes() {
+            const sourceTime = document.getElementById('sourceTime').value;
+            const sourceTimezone = selectedLocation ? selectedLocation.value : 'UTC';
+            
+            targetLocations.forEach(location => {
+                const convertedTime = convertTime(sourceTime, sourceTimezone, location.value);
+                const element = document.getElementById(`converted-${location.value}`);
+                if (element) {
+                    element.textContent = convertedTime;
+                }
+            });
+        }
+
+        // Function to update world clocks
+        function updateWorldClocks() {
+            const container = document.getElementById('worldClocks');
+            container.innerHTML = '';
+            
+            // Get 6 random locations from different continents
+            const continents = ['Africa', 'Americas', 'Asia', 'Europe', 'Australia', 'Pacific'];
+            const selectedLocations = [];
+            
+            continents.forEach(continent => {
+                const continentLocations = timezoneData.filter(loc => loc.continent === continent);
+                if (continentLocations.length > 0) {
+                    const randomIndex = Math.floor(Math.random() * continentLocations.length);
+                    selectedLocations.push(continentLocations[randomIndex]);
+                }
+            });
+            
+            selectedLocations.forEach(location => {
+                const weather = getWeatherData(location.value);
+                const time24 = getCurrentTime24Hour(location.value);
+                const isAvailable = isWorkingHours(time24);
+                
+                const div = document.createElement('div');
+                div.className = 'bg-white/10 rounded-xl p-4 border border-white/15 text-center transform transition-all duration-300 hover:scale-105';
+                
+                div.innerHTML = `
+                    <div class="flex items-center justify-center gap-2 mb-2">
+                        <span class="text-lg">${location.flag}</span>
+                        <span class="font-semibold text-white">${location.city}</span>
+                    </div>
+                    
+                    <div class="text-2xl font-bold text-white time-digit mb-1">
+                        ${getCurrentTimeInZone(location.value)}
+                    </div>
+                    
+                    <div class="text-sm text-gray-300 mb-3">
+                        ${getTimezoneAbbreviation(location.value)}
+                    </div>
+                    
+                    <div class="flex items-center justify-center gap-3 text-sm mb-2">
+                        <i class="${weather.icon} ${weather.condition === 'Rainy' ? 'text-blue-400' : 'text-yellow-400'}"></i>
+                        <span class="text-gray-300">${weather.condition}</span>
+                    </div>
+                    
+                    <div class="text-xs text-gray-400 mb-2">${weather.temp}</div>
+                    
+                    <div class="flex items-center justify-center gap-1 text-xs">
+                        <div class="w-2 h-2 rounded-full ${isAvailable ? 'bg-success' : 'bg-gray-500'}"></div>
+                        <span class="${isAvailable ? 'text-success' : 'text-gray-400'}">
+                            ${isAvailable ? 'Available' : 'Offline'}
+                        </span>
+                    </div>
+                `;
+                
+                container.appendChild(div);
+            });
+        }
+
+        // Function to check if time is working hours (9 AM - 5 PM)
+        function isWorkingHours(time24) {
+            const hour = parseInt(time24.split(':')[0]);
+            return hour >= 9 && hour < 17;
+        }
+
+        // Function to render target timezones
+        function renderTargetTimezones() {
+            const container = document.getElementById('targetTimezonesContainer');
+            
+            if (targetLocations.length === 0) {
+                container.innerHTML = `
+                    <div class="text-center py-8 text-gray-400">
+                        <i class="fas fa-map-marked-alt text-4xl mb-3 opacity-50"></i>
+                        <p>Search for locations above to add them here</p>
+                    </div>
+                `;
+                return;
+            }
+            
+            container.innerHTML = '';
+            
+            targetLocations.forEach(location => {
+                const weather = getWeatherData(location.value);
+                const isDay = getDayNightIndicator(location.value) === 'day';
+                const isAvailable = isWorkingHours(getCurrentTime24Hour(location.value));
+                
+                const div = document.createElement('div');
+                div.className = 'timezone-card bg-white/15 rounded-2xl p-5 border border-white/20 hover:bg-white/20 transition-all duration-300 fade-in';
+                
+                div.innerHTML = `
+                    <div class="flex items-center justify-between mb-4">
+                        <div class="flex items-center gap-3">
+                            <span class="text-2xl">${location.flag}</span>
+                            <div>
+                                <h4 class="font-bold text-white">${location.city}</h4>
+                                <p class="text-sm text-gray-300">${location.country}</p>
+                            </div>
+                        </div>
+                        <button class="remove-location text-red-300 hover:text-red-100 transition-colors duration-200 bg-white/10 hover:bg-white/20 p-2 rounded-lg" data-timezone="${location.value}">
+                            <i class="fas fa-times"></i>
+                        </button>
+                    </div>
+                    
+                    <div class="grid grid-cols-2 gap-4 mb-4">
+                        <div class="bg-white/10 rounded-xl p-3 text-center">
+                            <div class="text-xs text-gray-300 mb-1">Current Time</div>
+                            <div class="text-2xl font-bold text-white time-digit" data-timezone="${location.value}">
+                                ${getCurrentTimeInZone(location.value)}
+                            </div>
+                            <div class="text-xs text-gray-400">${getTimezoneAbbreviation(location.value)}</div>
+                        </div>
+                        
+                        <div class="bg-white/10 rounded-xl p-3 text-center">
+                            <div class="text-xs text-gray-300 mb-1">Converted Time</div>
+                            <div class="text-2xl font-bold text-white time-digit" id="converted-${location.value}">
+                                --:-- --
+                            </div>
+                            <div class="text-xs text-gray-400">from your input</div>
+                        </div>
+                    </div>
+                    
+                    <div class="grid grid-cols-3 gap-2 text-xs">
+                        <div class="bg-white/10 rounded-lg p-2 text-center">
+                            <i class="${weather.icon} ${isDay ? 'text-yellow-400' : 'text-blue-300'} mb-1"></i>
+                            <div class="text-gray-300">${weather.condition}</div>
+                        </div>
+                        
+                        <div class="bg-white/10 rounded-lg p-2 text-center">
+                            <i class="fas fa-thermometer-half text-orange-400 mb-1"></i>
+                            <div class="text-gray-300">${weather.temp}</div>
+                        </div>
+                        
+                        <div class="bg-white/10 rounded-lg p-2 text-center">
+                            <div class="flex items-center justify-center gap-1">
+                                <div class="w-2 h-2 rounded-full ${isAvailable ? 'bg-success' : 'bg-gray-500'}"></div>
+                                <span class="${isAvailable ? 'text-success' : 'text-gray-400'}">
+                                    ${isAvailable ? 'Work' : 'Sleep'}
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+                `;
+                
+                container.appendChild(div);
+            });
+            
+            // Update converted times
+            updateConvertedTimes();
+            
+            // Add event listeners to remove buttons
+            document.querySelectorAll('.remove-location').forEach(button => {
+                button.addEventListener('click', function() {
+                    const timezoneToRemove = this.getAttribute('data-timezone');
+                    targetLocations = targetLocations.filter(loc => loc.value !== timezoneToRemove);
+                    renderTargetTimezones();
+                });
+            });
+        }
+
+        // Search functionality for location selection
+        function setupSearch(searchInputId, resultsContainerId, onSelectCallback) {
+            const searchInput = document.getElementById(searchInputId);
+            const resultsContainer = document.getElementById(resultsContainerId);
+            
+            searchInput.addEventListener('input', function() {
+                const query = this.value.toLowerCase().trim();
+                
+                if (query.length === 0) {
+                    resultsContainer.classList.add('hidden');
+                    return;
+                }
+                
+                // Filter locations based on search query
+                const filteredLocations = timezoneData.filter(location => 
+                    location.city.toLowerCase().includes(query) || 
+                    location.country.toLowerCase().includes(query) ||
+                    location.value.toLowerCase().includes(query)
+                ).slice(0, 10); // Limit to 10 results
+                
+                if (filteredLocations.length === 0) {
+                    resultsContainer.innerHTML = '<div class="search-result-item">No locations found</div>';
+                } else {
+                    resultsContainer.innerHTML = '';
+                    filteredLocations.forEach(location => {
+                        const div = document.createElement('div');
+                        div.className = 'search-result-item hover:bg-blue-600/20';
+                        div.innerHTML = `
+                            <div class="flex items-center gap-3">
+                                <span class="text-lg">${location.flag}</span>
+                                <div>
+                                    <div class="font-medium">${location.city}</div>
+                                    <div class="text-sm text-gray-400">${location.country} • ${location.value.replace('_', ' ').split('/').pop()}</div>
+                                </div>
+                            </div>
+                        `;
+                        div.addEventListener('click', () => {
+                            onSelectCallback(location);
+                            resultsContainer.classList.add('hidden');
+                            searchInput.value = `${location.city}, ${location.country}`;
+                        });
+                        resultsContainer.appendChild(div);
+                    });
+                }
+                
+                resultsContainer.classList.remove('hidden');
+            });
+            
+            // Hide results when clicking outside
+            document.addEventListener('click', function(e) {
+                if (!searchInput.contains(e.target) && !resultsContainer.contains(e.target)) {
+                    resultsContainer.classList.add('hidden');
+                }
+            });
+        }
+
+        // Setup search for source location
+        setupSearch('locationSearch', 'searchResults', function(location) {
+            selectedLocation = location;
+            updateCurrentTimeDisplay();
+        });
+
+        // Setup search for target locations
+        setupSearch('targetLocationSearch', 'targetSearchResults', function(location) {
+            // Don't add if already in target locations or if it's the source location
+            if (selectedLocation && location.value === selectedLocation.value) {
+                alert('This is your current location. Choose a different one.');
+                return;
+            }
+            
+            if (targetLocations.some(loc => loc.value === location.value)) {
+                alert('This location is already added.');
+                return;
+            }
+            
+            targetLocations.push(location);
+            renderTargetTimezones();
+            document.getElementById('targetLocationSearch').value = '';
+        });
+
+        // Preset configurations
+        function setRwandaFocus() {
+            // Clear existing locations
+            targetLocations = [];
+            
+            // Add Rwanda as source
+            const rwanda = timezoneData.find(loc => loc.country === 'Rwanda');
+            if (rwanda) {
+                selectedLocation = rwanda;
+                document.getElementById('locationSearch').value = `${rwanda.city}, ${rwanda.country}`;
+                updateCurrentTimeDisplay();
+            }
+            
+            // Add common locations for Rwanda
+            const commonLocations = [
+                'Africa/Nairobi', // Kenya
+                'Africa/Kampala', // Uganda
+                'Africa/Kinshasa', // DRC
+                'Europe/London', // UK
+                'America/New_York', // USA
+                'Asia/Dubai' // UAE
+            ];
+            
+            commonLocations.forEach(timezone => {
+                const location = timezoneData.find(loc => loc.value === timezone);
+                if (location && !targetLocations.some(loc => loc.value === timezone)) {
+                    targetLocations.push(location);
+                }
+            });
+            
+            renderTargetTimezones();
+        }
+
+        function setGlobalTeam() {
+            // Clear existing locations
+            targetLocations = [];
+            
+            // Set a default source location (UTC if none selected)
+            if (!selectedLocation) {
+                selectedLocation = timezoneData.find(loc => loc.value === 'UTC');
+                if (selectedLocation) {
+                    document.getElementById('locationSearch').value = selectedLocation.city;
+                    updateCurrentTimeDisplay();
+                }
+            }
+            
+            // Add global team locations
+            const globalLocations = [
+                'America/New_York',
+                'Europe/London',
+                'Europe/Paris',
+                'Africa/Nairobi',
+                'Asia/Dubai',
+                'Asia/Tokyo',
+                'Australia/Sydney',
+                'America/Los_Angeles'
+            ];
+            
+            globalLocations.forEach(timezone => {
+                const location = timezoneData.find(loc => loc.value === timezone);
+                if (location && !targetLocations.some(loc => loc.value === timezone)) {
+                    targetLocations.push(location);
+                }
+            });
+            
+            renderTargetTimezones();
+        }
+
+        function clearAllLocations() {
+            if (confirm('Are you sure you want to remove all locations?')) {
+                targetLocations = [];
+                renderTargetTimezones();
+            }
+        }
+
+        // Initialize with Rwanda as default
+        window.addEventListener('load', function() {
+            setRwandaFocus();
+        });
+    </script>
+</body>
+</html>
